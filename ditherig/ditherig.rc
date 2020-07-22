@@ -1,0 +1,154 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// âpåÍ (ïƒçë) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "icon1.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU 
+BEGIN
+    POPUP " "
+    BEGIN
+        MENUITEM "--- Dithering Settings for Intel Graphics Ver 1.12 ---", ID_TITLE, INACTIVE
+        MENUITEM " ",                           ID_INFO1, INACTIVE
+        MENUITEM " ",                           ID_INFO2, INACTIVE
+        MENUITEM SEPARATOR
+        MENUITEM "--- Dithering algorithms ---", ID_TITLE, INACTIVE
+        MENUITEM "Disable all dithering functions (better resolution)", ID_SELECTION0
+        MENUITEM "Spatial (default)",           ID_SELECTION1
+        MENUITEM "Spatio-Temporal 1 (better color)", ID_SELECTION2
+        MENUITEM "Spatio-Temporal 2 (may not work)", ID_SELECTION3
+        MENUITEM "Temporal (may not work)",     ID_SELECTION4
+        MENUITEM SEPARATOR
+        MENUITEM "--- GPU frequency ---",       ID_TITLE, INACTIVE
+        MENUITEM "Reset to the system default", ID_GPU_FREQ_RESET
+        MENUITEM "Fix to the highest",          ID_GPU_FREQ_HIGHEST
+        MENUITEM "Fix to the lowest",           ID_GPU_FREQ_LOWEST
+        MENUITEM SEPARATOR
+        MENUITEM "--- Miscellaneous features for troubleshooting ---", ID_TITLE, INACTIVE
+        MENUITEM "Fix CPU frequencies at the nominal value", ID_FREQ_NOMINAL
+        MENUITEM "Disable Enhanced Intel SpeedStep Technology", ID_DISABLE_EIST
+        MENUITEM "Disable Intel Turbo Boost Technology", ID_DISABLE_IDA
+        MENUITEM "Disable Enhanced Halt State (C1E)", ID_DISABLE_C1E
+        MENUITEM "Disable BD PROCHOT signal",   ID_DISABLE_BDPROCHOT
+        MENUITEM "Disable Running Average Power Limit", ID_DISABLE_RAPL
+        MENUITEM "Disable TDP limit (MCH register 59A0)", ID_DISABLE_MCH59A0
+        MENUITEM SEPARATOR
+        MENUITEM "--- Automatic running ---",   ID_TITLE, INACTIVE
+        MENUITEM "Register to the Windows startup", ID_REGISTER
+        MENUITEM "Unregister from the Windows startup", ID_UNREGISTER
+        MENUITEM SEPARATOR
+        MENUITEM "Save current settings",       ID_SAVE
+        MENUITEM "Exit",                        ID_EXIT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,12,0,1
+ PRODUCTVERSION 1,12,0,1
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "Dithering Settings for Intel Graphics"
+            VALUE "FileVersion", "1, 12, 0, 1"
+            VALUE "InternalName", "ditherig"
+            VALUE "LegalCopyright", "Copyright (C) 2013-2020 Suguru Kawamoto"
+            VALUE "OriginalFilename", "ditherig.exe"
+            VALUE "ProductName", "Dithering Settings for Intel Graphics"
+            VALUE "ProductVersion", "1, 12, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // âpåÍ (ïƒçë) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

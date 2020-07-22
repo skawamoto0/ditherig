@@ -1,0 +1,163 @@
+,Type,Selection,Count,BAR1,BAR2,Address,Size,Mask,Data
+1,1,0,0,0x10,0x14,0x70008,4,0x0000001c,0x00000000,Disable - Pipe A
+1,1,0,1,0x10,0x14,0x71008,4,0x0000001c,0x00000000,Disable - Pipe B
+1,1,0,2,0x10,0x14,0x72008,4,0x0000001c,0x00000000,Disable - Pipe C
+1,1,1,0,0x10,0x14,0x70008,4,0x0000001c,0x00000010,Spatial - Pipe A
+1,1,1,1,0x10,0x14,0x71008,4,0x0000001c,0x00000010,Spatial - Pipe B
+1,1,1,2,0x10,0x14,0x72008,4,0x0000001c,0x00000010,Spatial - Pipe C
+1,1,2,0,0x10,0x14,0x70008,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe A
+1,1,2,1,0x10,0x14,0x71008,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe B
+1,1,2,2,0x10,0x14,0x72008,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe C
+1,1,3,0,0x10,0x14,0x70008,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe A
+1,1,3,1,0x10,0x14,0x71008,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe B
+1,1,3,2,0x10,0x14,0x72008,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe C
+1,1,4,0,0x10,0x14,0x70008,4,0x0000001c,0x0000001c,Temporal - Pipe A
+1,1,4,1,0x10,0x14,0x71008,4,0x0000001c,0x0000001c,Temporal - Pipe B
+1,1,4,2,0x10,0x14,0x72008,4,0x0000001c,0x0000001c,Temporal - Pipe C
+1,1,5,0,0x10,0x14,0x0a008,4,0x00000000,0x00000000,Reset frequency
+1,1,6,0,0x10,0x14,0x0a008,4,0x7e000000,0x7e000000,Highest frequency
+1,1,7,0,0x10,0x14,0x0a008,4,0x7e000000,0x00000000,Lowest frequency
+1,2,0,0,0x10,0x14,0x70008,4,0x0000001c,0x00000000,Disable - Pipe A
+1,2,0,1,0x10,0x14,0x71008,4,0x0000001c,0x00000000,Disable - Pipe B
+1,2,0,2,0x10,0x14,0x72008,4,0x0000001c,0x00000000,Disable - Pipe C
+1,2,0,3,0x10,0x14,0x7f008,4,0x0000001c,0x00000000,Disable - eDP
+1,2,1,0,0x10,0x14,0x70008,4,0x0000001c,0x00000010,Spatial - Pipe A
+1,2,1,1,0x10,0x14,0x71008,4,0x0000001c,0x00000010,Spatial - Pipe B
+1,2,1,2,0x10,0x14,0x72008,4,0x0000001c,0x00000010,Spatial - Pipe C
+1,2,1,3,0x10,0x14,0x7f008,4,0x0000001c,0x00000010,Spatial - eDP
+1,2,2,0,0x10,0x14,0x70008,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe A
+1,2,2,1,0x10,0x14,0x71008,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe B
+1,2,2,2,0x10,0x14,0x72008,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe C
+1,2,2,3,0x10,0x14,0x7f008,4,0x0000001c,0x00000014,Spatio-Temporal 1 - eDP
+1,2,3,0,0x10,0x14,0x70008,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe A
+1,2,3,1,0x10,0x14,0x71008,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe B
+1,2,3,2,0x10,0x14,0x72008,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe C
+1,2,3,3,0x10,0x14,0x7f008,4,0x0000001c,0x00000018,Spatio-Temporal 2 - eDP
+1,2,4,0,0x10,0x14,0x70008,4,0x0000001c,0x0000001c,Temporal - Pipe A
+1,2,4,1,0x10,0x14,0x71008,4,0x0000001c,0x0000001c,Temporal - Pipe B
+1,2,4,2,0x10,0x14,0x72008,4,0x0000001c,0x0000001c,Temporal - Pipe C
+1,2,4,3,0x10,0x14,0x7f008,4,0x0000001c,0x0000001c,Temporal - eDP
+1,2,5,0,0x10,0x14,0x0a008,4,0x00000000,0x00000000,Reset frequency
+1,2,6,0,0x10,0x14,0x0a008,4,0x7f000000,0x7f000000,Highest frequency
+1,2,7,0,0x10,0x14,0x0a008,4,0x7f000000,0x00000000,Lowest frequency
+1,3,0,0,0x10,0x14,0x70030,4,0x0000001c,0x00000000,Disable - Pipe A
+1,3,0,1,0x10,0x14,0x71030,4,0x0000001c,0x00000000,Disable - Pipe B
+1,3,0,2,0x10,0x14,0x72030,4,0x0000001c,0x00000000,Disable - Pipe C
+1,3,1,0,0x10,0x14,0x70030,4,0x0000001c,0x00000010,Spatial - Pipe A
+1,3,1,1,0x10,0x14,0x71030,4,0x0000001c,0x00000010,Spatial - Pipe B
+1,3,1,2,0x10,0x14,0x72030,4,0x0000001c,0x00000010,Spatial - Pipe C
+1,3,2,0,0x10,0x14,0x70030,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe A
+1,3,2,1,0x10,0x14,0x71030,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe B
+1,3,2,2,0x10,0x14,0x72030,4,0x0000001c,0x00000014,Spatio-Temporal 1 - Pipe C
+1,3,3,0,0x10,0x14,0x70030,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe A
+1,3,3,1,0x10,0x14,0x71030,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe B
+1,3,3,2,0x10,0x14,0x72030,4,0x0000001c,0x00000018,Spatio-Temporal 2 - Pipe C
+1,3,4,0,0x10,0x14,0x70030,4,0x0000001c,0x0000001c,Temporal - Pipe A
+1,3,4,1,0x10,0x14,0x71030,4,0x0000001c,0x0000001c,Temporal - Pipe B
+1,3,4,2,0x10,0x14,0x72030,4,0x0000001c,0x0000001c,Temporal - Pipe C
+1,3,5,0,0x10,0x14,0x0a008,4,0x00000000,0x00000000,Reset frequency
+1,3,6,0,0x10,0x14,0x0a008,4,0x7f000000,0x7f000000,Highest frequency
+1,3,7,0,0x10,0x14,0x0a008,4,0x7f000000,0x00000000,Lowest frequency
+,Vendor ID,Device ID,Type
+2,0x8086,0x0102,1,Intel(R) HD Graphics (Sandy Bridge)
+2,0x8086,0x0106,1,Intel(R) HD Graphics (Sandy Bridge)
+2,0x8086,0x010a,1,Intel(R) HD Graphics P3000 (Sandy Bridge)
+2,0x8086,0x0112,1,Intel(R) HD Graphics 3000 (Sandy Bridge)
+2,0x8086,0x0116,1,Intel(R) HD Graphics 3000 (Sandy Bridge)
+2,0x8086,0x0122,1,Intel(R) HD Graphics 3000 (Sandy Bridge)
+2,0x8086,0x0126,1,Intel(R) HD Graphics 3000 (Sandy Bridge)
+2,0x8086,0x0152,1,Intel(R) HD Graphics (Ivy Bridge)
+2,0x8086,0x0156,1,Intel(R) HD Graphics (Ivy Bridge)
+2,0x8086,0x015a,1,Intel(R) HD Graphics (Ivy Bridge)
+2,0x8086,0x0162,1,Intel(R) HD Graphics 4000 (Ivy Bridge)
+2,0x8086,0x0166,1,Intel(R) HD Graphics (Ivy Bridge)
+2,0x8086,0x016a,1,Intel(R) HD Graphics (Ivy Bridge)
+2,0x8086,0x0402,2,Intel(R) HD Graphics (Haswell)
+2,0x8086,0x0406,2,Intel(R) HD Graphics (Haswell)
+2,0x8086,0x040a,2,Intel(R) HD Graphics (Haswell)
+2,0x8086,0x0412,2,Intel(R) HD Graphics 4600 (Haswell)
+2,0x8086,0x0416,2,Intel(R) HD Graphics 4600 (Haswell)
+2,0x8086,0x041a,2,Intel(R) HD Graphics P4600/P4700 (Haswell)
+2,0x8086,0x041e,2,Intel(R) HD Graphics 4400 (Haswell)
+2,0x8086,0x0a06,2,Intel(R) HD Graphics (Haswell)
+2,0x8086,0x0a0e,2,Intel(R) HD Graphics (Haswell)
+2,0x8086,0x0a16,2,Intel(R) HD Graphics Family (Haswell)
+2,0x8086,0x0a1e,2,Intel(R) HD Graphics Family (Haswell)
+2,0x8086,0x0a26,2,Intel(R) HD Graphics 5000 (Haswell)
+2,0x8086,0x0a2e,2,Intel(R) Iris(TM) Graphics 5100 (Haswell)
+2,0x8086,0x0d22,2,Intel(R) Iris(TM) Pro Graphics 5200 (Haswell)
+2,0x8086,0x0d26,2,Intel(R) Iris(TM) Pro Graphics 5200 (Haswell)
+2,0x8086,0x0f31,1,Intel(R) HD Graphics (Silvermont)
+2,0x8086,0x1606,3,Intel(R) HD Graphics (Broadwell)
+2,0x8086,0x160e,3,Intel(R) HD Graphics (Broadwell)
+2,0x8086,0x1612,3,Intel(R) HD Graphics 5600 (Broadwell)
+2,0x8086,0x1616,3,Intel(R) HD Graphics 5500 (Broadwell)
+2,0x8086,0x161a,3,Intel(R) HD Graphics P5700 (Broadwell)
+2,0x8086,0x161e,3,Intel(R) HD Graphics 5300 (Broadwell)
+2,0x8086,0x1622,3,Intel(R) Iris(TM) Pro Graphics 6200 (Broadwell)
+2,0x8086,0x1626,3,Intel(R) HD Graphics 6000 (Broadwell)
+2,0x8086,0x162a,3,Intel(R) Iris(TM) Pro Graphics P6300 (Broadwell)
+2,0x8086,0x162b,3,Intel(R) Iris(TM) Graphics 6100 (Broadwell)
+2,0x8086,0x1902,3,Intel(R) HD Graphics 510 (Skylake)
+2,0x8086,0x1906,3,Intel(R) HD Graphics 510 (Skylake)
+2,0x8086,0x190b,3,Intel(R) HD Graphics 510 (Skylake)
+2,0x8086,0x1912,3,Intel(R) HD Graphics 530 (Skylake)
+2,0x8086,0x1916,3,Intel(R) HD Graphics 520 (Skylake)
+2,0x8086,0x191b,3,Intel(R) HD Graphics 530 (Skylake)
+2,0x8086,0x191d,3,Intel(R) HD Graphics P530 (Skylake)
+2,0x8086,0x191e,3,Intel(R) HD Graphics 515 (Skylake)
+2,0x8086,0x1921,3,Intel(R) HD Graphics 520 (Skylake)
+2,0x8086,0x1923,3,Intel(R) HD Graphics 535 (Skylake)
+2,0x8086,0x1926,3,Intel(R) Iris(TM) Graphics 540 (Skylake)
+2,0x8086,0x1927,3,Intel(R) Iris(TM) Graphics 550 (Skylake)
+2,0x8086,0x192b,3,Intel(R) Iris(TM) Graphics (Skylake)
+2,0x8086,0x192d,3,Intel(R) Iris(TM) Graphics P555 (Skylake)
+2,0x8086,0x193a,3,Intel(R) Iris(TM) Pro Graphics P580 (Skylake)
+2,0x8086,0x193b,3,Intel(R) Iris(TM) Pro Graphics 580 (Skylake)
+2,0x8086,0x193d,3,Intel(R) Iris(TM) Pro Graphics P580 (Skylake)
+2,0x8086,0x22b0,3,Intel(R) HD Graphics (Airmont)
+2,0x8086,0x22b1,3,Intel(R) HD Graphics (Airmont)
+2,0x8086,0x3184,3,Intel(R) UHD Graphics 605 (Goldmont Plus)
+2,0x8086,0x3185,3,Intel(R) UHD Graphics 600 (Goldmont Plus)
+2,0x8086,0x3e90,3,Intel(R) UHD Graphics 610 (Coffee Lake)
+2,0x8086,0x3e91,3,Intel(R) UHD Graphics 630 (Coffee Lake)
+2,0x8086,0x3e92,3,Intel(R) UHD Graphics 630 (Coffee Lake)
+2,0x8086,0x3e93,3,Intel(R) UHD Graphics 610 (Coffee Lake)
+2,0x8086,0x3e94,3,Intel(R) UHD Graphics P630 (Coffee Lake)
+2,0x8086,0x3e96,3,Intel(R) UHD Graphics P630 (Coffee Lake)
+2,0x8086,0x3e98,3,Intel(R) UHD Graphics 630 (Coffee Lake)
+2,0x8086,0x3e9a,3,Intel(R) UHD Graphics P630 (Coffee Lake)
+2,0x8086,0x3e9b,3,Intel(R) UHD Graphics 630 (Coffee Lake)
+2,0x8086,0x3e9c,3,Intel(R) UHD Graphics 610 (Coffee Lake)
+2,0x8086,0x3ea0,3,Intel(R) UHD Graphics 620 (Whiskey Lake)
+2,0x8086,0x3ea1,3,Intel(R) UHD Graphics 610 (Whiskey Lake)
+2,0x8086,0x3ea5,3,Intel(R) Iris(R) Plus Graphics 655 (Coffee Lake)
+2,0x8086,0x3ea6,3,Intel(R) Iris(R) Plus Graphics 645 (Coffee Lake)
+2,0x8086,0x3ea8,3,Intel(R) Iris(R) Plus Graphics 655 (Coffee Lake)
+2,0x8086,0x5902,3,Intel(R) HD Graphics 610 (Kaby Lake)
+2,0x8086,0x5906,3,Intel(R) HD Graphics 610 (Kaby Lake)
+2,0x8086,0x590b,3,Intel(R) HD Graphics 610 (Kaby Lake)
+2,0x8086,0x5912,3,Intel(R) HD Graphics 630 (Kaby Lake)
+2,0x8086,0x5916,3,Intel(R) HD Graphics 620 (Kaby Lake)
+2,0x8086,0x5917,3,Intel(R) UHD Graphics 620 (Kaby Lake)
+2,0x8086,0x591a,3,Intel(R) HD Graphics P630 (Kaby Lake)
+2,0x8086,0x591b,3,Intel(R) HD Graphics 630 (Kaby Lake)
+2,0x8086,0x591c,3,Intel(R) UHD Graphics 615 (Amber Lake)
+2,0x8086,0x591d,3,Intel(R) HD Graphics P630 (Kaby Lake)
+2,0x8086,0x591e,3,Intel(R) HD Graphics 615 (Kaby Lake)
+2,0x8086,0x5921,3,Intel(R) HD Graphics 620 (Kaby Lake)
+2,0x8086,0x5923,3,Intel(R) HD Graphics 635 (Kaby Lake)
+2,0x8086,0x5926,3,Intel(R) Iris(R) Plus Graphics 640 (Kaby Lake)
+2,0x8086,0x5927,3,Intel(R) Iris(R) Plus Graphics 650 (Kaby Lake)
+2,0x8086,0x5a84,3,Intel(R) HD Graphics (Goldmont)
+2,0x8086,0x5a85,3,Intel(R) HD Graphics (Goldmont)
+2,0x8086,0x87c0,3,Intel(R) UHD Graphics 617 (Amber Lake)
+2,0x8086,0x87ca,3,Intel(R) UHD Graphics (Amber Lake)
+2,0x8086,0x8a51,3,Intel(R) Iris(R) Plus Graphics (Ice Lake)
+2,0x8086,0x8a52,3,Intel(R) Iris(R) Plus Graphics (Ice Lake)
+2,0x8086,0x8a56,3,Intel(R) UHD Graphics (Ice Lake)
+2,0x8086,0x8a5a,3,Intel(R) Iris(R) Plus Graphics (Ice Lake)
+2,0x8086,0x8a5c,3,Intel(R) Iris(R) Plus Graphics (Ice Lake)
+2,0x8086,0x9b41,3,Intel(R) UHD Graphics (Comet Lake)
+2,0x8086,0x9bca,3,Intel(R) UHD Graphics (Comet Lake)
+2,0x8086,0x9bc4,3,Intel(R) UHD Graphics (Comet Lake)
