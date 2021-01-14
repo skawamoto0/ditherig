@@ -402,7 +402,10 @@ BOOL IsSupportedGPU()
 		if(ReadPciConfigWordEx(PCIAddress, 0x00000000, &VendorID) && ReadPciConfigWordEx(PCIAddress, 0x00000002, &DeviceID))
 		{
 			if(FindConfigFromDatabase(VendorID, DeviceID, 0, 0, &BAR1Address, &BAR2Address, &RegisterAddress, &RegisterSize, &RegisterMask, &RegisterData, NULL))
+			{
 				bResult = TRUE;
+				break;
+			}
 		}
 		Index++;
 	}
@@ -434,7 +437,10 @@ BOOL GetGPUInfo(TCHAR* Text1, TCHAR* Text2)
 		if(ReadPciConfigWordEx(PCIAddress, 0x00000000, &VendorID) && ReadPciConfigWordEx(PCIAddress, 0x00000002, &DeviceID))
 		{
 			if(FindConfigFromDatabase(VendorID, DeviceID, 0, 0, &BAR1Address, &BAR2Address, &RegisterAddress, &RegisterSize, &RegisterMask, &RegisterData, Info))
+			{
 				bResult = TRUE;
+				break;
+			}
 		}
 		Index++;
 	}

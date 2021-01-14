@@ -65,7 +65,7 @@ IDR_MENU1 MENU
 BEGIN
     POPUP " "
     BEGIN
-        MENUITEM "--- Dithering Settings for Intel Graphics Ver 1.13 ---", ID_TITLE, INACTIVE
+        MENUITEM "--- Dithering Settings for Intel Graphics Ver 1.14 ---", ID_TITLE, INACTIVE
         MENUITEM " ",                           ID_INFO1, INACTIVE
         MENUITEM " ",                           ID_INFO2, INACTIVE
         MENUITEM SEPARATOR
@@ -106,8 +106,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,13,0,1
- PRODUCTVERSION 1,13,0,1
+ FILEVERSION 1,14,0,1
+ PRODUCTVERSION 1,14,0,1
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -123,12 +123,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Dithering Settings for Intel Graphics"
-            VALUE "FileVersion", "1, 13, 0, 1"
+            VALUE "FileVersion", "1, 14, 0, 1"
             VALUE "InternalName", "ditherig"
-            VALUE "LegalCopyright", "Copyright (C) 2013-2020 Suguru Kawamoto"
+            VALUE "LegalCopyright", "Copyright (C) 2013-2021 Suguru Kawamoto"
             VALUE "OriginalFilename", "ditherig.exe"
             VALUE "ProductName", "Dithering Settings for Intel Graphics"
-            VALUE "ProductVersion", "1, 13, 0, 1"
+            VALUE "ProductVersion", "1, 14, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
