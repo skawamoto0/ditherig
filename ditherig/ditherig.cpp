@@ -7,7 +7,8 @@
 #include "WinRing0.h"
 
 
-#define APPLICATION_NAME				_T("Dithering Settings for Intel Graphics")
+#define APPLICATION_NAME				_T("Dithering Settings for Integrated Graphics")
+#define APPLICATION_NAME_OLD			_T("Dithering Settings for Intel Graphics")
 
 HINSTANCE g_hInstance;
 TCHAR g_AppPath[MAX_PATH];
@@ -486,9 +487,12 @@ BOOL ConfigureGPURegister(DWORD Selection)
 					if(ReadPciConfigDwordEx(PCIAddress, BAR1Address, &BAR1) && ReadPciConfigDwordEx(PCIAddress, BAR2Address, &BAR2))
 					{
 #if defined(_X86_)
-						Address = (DWORD_PTR)BAR1 & ~((DWORD_PTR)0x100 - 1);
+						Address = (DWORD_PTR)BAR1 & ~((DWORD_PTR)0x10 - 1);
 #elif defined(_AMD64_)
-						Address = ((DWORD_PTR)BAR1 | ((DWORD_PTR)BAR2 << 32)) & ~((DWORD_PTR)0x100 - 1);
+						if(BAR2Address != 0)
+							Address = ((DWORD_PTR)BAR1 | ((DWORD_PTR)BAR2 << 32)) & ~((DWORD_PTR)0x10 - 1);
+						else
+							Address = (DWORD_PTR)BAR1 & ~((DWORD_PTR)0x10 - 1);
 #endif
 						if(ReadPhysicalMemory(Address + RegisterAddress, &Old, RegisterSize))
 						{
@@ -703,9 +707,9 @@ BOOL EnableMCH59A0(BOOL bEnable)
 					if(BAR1 & 0x00000001)
 					{
 #if defined(_X86_)
-						Address = (DWORD_PTR)BAR1 & ~((DWORD_PTR)0x8000 - 1);
+						Address = (DWORD_PTR)BAR1 & ~((DWORD_PTR)0x10 - 1);
 #elif defined(_AMD64_)
-						Address = ((DWORD_PTR)BAR1 | ((DWORD_PTR)BAR2 << 32)) & ~((DWORD_PTR)0x8000 - 1);
+						Address = ((DWORD_PTR)BAR1 | ((DWORD_PTR)BAR2 << 32)) & ~((DWORD_PTR)0x10 - 1);
 #endif
 						if(bEnable)
 							bResult = TRUE;
@@ -957,78 +961,80 @@ BOOL RegisterStartup(LPCWSTR Name, LPCWSTR FileName)
 
 BOOL SetStartup(BOOL bInstall)
 {
+	BOOL bResult;
 	OSVERSIONINFO Version;
 	TCHAR Temp[MAX_PATH + 4];
 	HKEY hKey;
+	bResult = FALSE;
 	Version.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	if(!GetVersionEx(&Version))
-		return FALSE;
-	if(Version.dwMajorVersion >= 6)
+	if(GetVersionEx(&Version))
 	{
-		if(bInstall)
+		if(Version.dwMajorVersion >= 6)
 		{
-			if(!RegisterStartup(APPLICATION_NAME, g_AppPath))
-				return FALSE;
-		}
-		else
-		{
-			if(!UnregisterTaskScheduler(APPLICATION_NAME))
-				return FALSE;
-		}
-	}
-	else
-	{
-		if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_READ | KEY_WRITE, &hKey) != ERROR_SUCCESS)
-			return FALSE;
-		if(bInstall)
-		{
-			_stprintf(Temp, _T("\"%s\""), g_AppPath);
-			if(RegSetValueEx(hKey, APPLICATION_NAME, 0, REG_SZ, (BYTE*)&Temp, sizeof(TCHAR) * ((DWORD)_tcslen(Temp) + 1)) != ERROR_SUCCESS)
+			UnregisterTaskScheduler(APPLICATION_NAME_OLD);
+			if(bInstall)
 			{
-				RegCloseKey(hKey);
-				return FALSE;
+				if(RegisterStartup(APPLICATION_NAME, g_AppPath))
+					bResult = TRUE;
+			}
+			else
+			{
+				if(UnregisterTaskScheduler(APPLICATION_NAME))
+					bResult = TRUE;
 			}
 		}
 		else
 		{
-			if(RegQueryValueEx(hKey, APPLICATION_NAME, NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+			if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_READ | KEY_WRITE, &hKey) == ERROR_SUCCESS)
 			{
-				if(RegDeleteValue(hKey, APPLICATION_NAME) != ERROR_SUCCESS)
+				RegDeleteValue(hKey, APPLICATION_NAME_OLD);
+				if(bInstall)
 				{
-					RegCloseKey(hKey);
-					return FALSE;
+					_stprintf(Temp, _T("\"%s\""), g_AppPath);
+					if(RegSetValueEx(hKey, APPLICATION_NAME, 0, REG_SZ, (BYTE*)&Temp, sizeof(TCHAR) * ((DWORD)_tcslen(Temp) + 1)) == ERROR_SUCCESS)
+						bResult = TRUE;
 				}
+				else
+				{
+					if(RegDeleteValue(hKey, APPLICATION_NAME) == ERROR_SUCCESS)
+						bResult = TRUE;
+				}
+				RegCloseKey(hKey);
 			}
 		}
-		RegCloseKey(hKey);
 	}
-	return TRUE;
+	return bResult;
 }
 
 void LoadSettings()
 {
 	HKEY hKey;
+	HKEY hAppKey;
 	DWORD Data;
-	if(RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\") APPLICATION_NAME, 0, KEY_READ | KEY_WRITE, &hKey) == ERROR_SUCCESS)
+	if(RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software"), 0, KEY_READ | KEY_WRITE, &hKey) == ERROR_SUCCESS)
 	{
-		Data = sizeof(DWORD);
-		RegQueryValueEx(hKey, _T("Selection"), NULL, NULL, (BYTE*)&g_Selection, &Data);
-		Data = sizeof(BOOL);
-		RegQueryValueEx(hKey, _T("FreqNominal"), NULL, NULL, (BYTE*)&g_bFreqNominal, &Data);
-		Data = sizeof(BOOL);
-		RegQueryValueEx(hKey, _T("DisableEIST"), NULL, NULL, (BYTE*)&g_bDisableEIST, &Data);
-		Data = sizeof(BOOL);
-		RegQueryValueEx(hKey, _T("DisableIDA"), NULL, NULL, (BYTE*)&g_bDisableIDA, &Data);
-		Data = sizeof(BOOL);
-		RegQueryValueEx(hKey, _T("DisableC1E"), NULL, NULL, (BYTE*)&g_bDisableC1E, &Data);
-		Data = sizeof(BOOL);
-		RegQueryValueEx(hKey, _T("DisableBDPROCHOT"), NULL, NULL, (BYTE*)&g_bDisableBDPROCHOT, &Data);
-		Data = sizeof(BOOL);
-		RegQueryValueEx(hKey, _T("DisableRAPL"), NULL, NULL, (BYTE*)&g_bDisableRAPL, &Data);
-		Data = sizeof(DWORD);
-		RegQueryValueEx(hKey, _T("DisableMCH59A0"), NULL, NULL, (BYTE*)&g_bDisableMCH59A0, &Data);
-		Data = sizeof(DWORD);
-		RegQueryValueEx(hKey, _T("GPUFreq"), NULL, NULL, (BYTE*)&g_GPUFreq, &Data);
+		if(RegOpenKeyEx(hKey, APPLICATION_NAME, 0, KEY_READ | KEY_WRITE, &hAppKey) == ERROR_SUCCESS || RegOpenKeyEx(hKey, APPLICATION_NAME_OLD, 0, KEY_READ | KEY_WRITE, &hAppKey) == ERROR_SUCCESS)
+		{
+			Data = sizeof(DWORD);
+			RegQueryValueEx(hAppKey, _T("Selection"), NULL, NULL, (BYTE*)&g_Selection, &Data);
+			Data = sizeof(BOOL);
+			RegQueryValueEx(hAppKey, _T("FreqNominal"), NULL, NULL, (BYTE*)&g_bFreqNominal, &Data);
+			Data = sizeof(BOOL);
+			RegQueryValueEx(hAppKey, _T("DisableEIST"), NULL, NULL, (BYTE*)&g_bDisableEIST, &Data);
+			Data = sizeof(BOOL);
+			RegQueryValueEx(hAppKey, _T("DisableIDA"), NULL, NULL, (BYTE*)&g_bDisableIDA, &Data);
+			Data = sizeof(BOOL);
+			RegQueryValueEx(hAppKey, _T("DisableC1E"), NULL, NULL, (BYTE*)&g_bDisableC1E, &Data);
+			Data = sizeof(BOOL);
+			RegQueryValueEx(hAppKey, _T("DisableBDPROCHOT"), NULL, NULL, (BYTE*)&g_bDisableBDPROCHOT, &Data);
+			Data = sizeof(BOOL);
+			RegQueryValueEx(hAppKey, _T("DisableRAPL"), NULL, NULL, (BYTE*)&g_bDisableRAPL, &Data);
+			Data = sizeof(DWORD);
+			RegQueryValueEx(hAppKey, _T("DisableMCH59A0"), NULL, NULL, (BYTE*)&g_bDisableMCH59A0, &Data);
+			Data = sizeof(DWORD);
+			RegQueryValueEx(hAppKey, _T("GPUFreq"), NULL, NULL, (BYTE*)&g_GPUFreq, &Data);
+			RegCloseKey(hAppKey);
+		}
 		RegCloseKey(hKey);
 	}
 }
@@ -1036,17 +1042,24 @@ void LoadSettings()
 void SaveSettings()
 {
 	HKEY hKey;
-	if(RegCreateKeyEx(HKEY_CURRENT_USER, _T("Software\\") APPLICATION_NAME, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS)
+	HKEY hAppKey;
+	if(RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software"), 0, KEY_READ | KEY_WRITE, &hKey) == ERROR_SUCCESS)
 	{
-		RegSetValueEx(hKey, _T("Selection"), 0, REG_DWORD, (BYTE*)&g_Selection, sizeof(DWORD));
-		RegSetValueEx(hKey, _T("FreqNominal"), 0, REG_DWORD, (BYTE*)&g_bFreqNominal, sizeof(BOOL));
-		RegSetValueEx(hKey, _T("DisableEIST"), 0, REG_DWORD, (BYTE*)&g_bDisableEIST, sizeof(BOOL));
-		RegSetValueEx(hKey, _T("DisableIDA"), 0, REG_DWORD, (BYTE*)&g_bDisableIDA, sizeof(BOOL));
-		RegSetValueEx(hKey, _T("DisableC1E"), 0, REG_DWORD, (BYTE*)&g_bDisableC1E, sizeof(BOOL));
-		RegSetValueEx(hKey, _T("DisableBDPROCHOT"), 0, REG_DWORD, (BYTE*)&g_bDisableBDPROCHOT, sizeof(BOOL));
-		RegSetValueEx(hKey, _T("DisableRAPL"), 0, REG_DWORD, (BYTE*)&g_bDisableRAPL, sizeof(BOOL));
-		RegSetValueEx(hKey, _T("DisableMCH59A0"), 0, REG_DWORD, (BYTE*)&g_bDisableMCH59A0, sizeof(BOOL));
-		RegSetValueEx(hKey, _T("GPUFreq"), 0, REG_DWORD, (BYTE*)&g_GPUFreq, sizeof(DWORD));
+		RegRenameKey(hKey, APPLICATION_NAME_OLD, APPLICATION_NAME);
+		RegDeleteTree(hKey, APPLICATION_NAME_OLD);
+		if(RegCreateKeyEx(hKey, APPLICATION_NAME, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, NULL, &hAppKey, NULL) == ERROR_SUCCESS)
+		{
+			RegSetValueEx(hAppKey, _T("Selection"), 0, REG_DWORD, (BYTE*)&g_Selection, sizeof(DWORD));
+			RegSetValueEx(hAppKey, _T("FreqNominal"), 0, REG_DWORD, (BYTE*)&g_bFreqNominal, sizeof(BOOL));
+			RegSetValueEx(hAppKey, _T("DisableEIST"), 0, REG_DWORD, (BYTE*)&g_bDisableEIST, sizeof(BOOL));
+			RegSetValueEx(hAppKey, _T("DisableIDA"), 0, REG_DWORD, (BYTE*)&g_bDisableIDA, sizeof(BOOL));
+			RegSetValueEx(hAppKey, _T("DisableC1E"), 0, REG_DWORD, (BYTE*)&g_bDisableC1E, sizeof(BOOL));
+			RegSetValueEx(hAppKey, _T("DisableBDPROCHOT"), 0, REG_DWORD, (BYTE*)&g_bDisableBDPROCHOT, sizeof(BOOL));
+			RegSetValueEx(hAppKey, _T("DisableRAPL"), 0, REG_DWORD, (BYTE*)&g_bDisableRAPL, sizeof(BOOL));
+			RegSetValueEx(hAppKey, _T("DisableMCH59A0"), 0, REG_DWORD, (BYTE*)&g_bDisableMCH59A0, sizeof(BOOL));
+			RegSetValueEx(hAppKey, _T("GPUFreq"), 0, REG_DWORD, (BYTE*)&g_GPUFreq, sizeof(DWORD));
+			RegCloseKey(hAppKey);
+		}
 		RegCloseKey(hKey);
 	}
 }
@@ -1055,7 +1068,6 @@ void UpdateMenu()
 {
 	HMENU hMenu;
 	MENUITEMINFO mii;
-	TCHAR Text[256];
 	hMenu = GetSubMenu(g_hMenu, 0);
 	mii.cbSize = sizeof(MENUITEMINFO);
 	mii.fMask = MIIM_STATE;
@@ -1139,6 +1151,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	TCHAR Temp[MAX_PATH];
 	POINT Mouse;
 	HMENU hMenu;
+	DWORD Selection;
+	DWORD GPUFreq;
 	switch(uMsg)
 	{
 	case WM_CREATE:
@@ -1189,25 +1203,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if(g_Selection > ID_SELECTION4 - ID_SELECTION0)
 			g_Selection = 0;
 		if(g_bSupportedGPU)
-		{
-			if(!ConfigureGPURegister(g_Selection))
-			{
-				MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-				DestroyWindow(hWnd);
-				break;
-			}
-		}
+			ConfigureGPURegister(g_Selection);
 		if(g_GPUFreq > ID_GPU_FREQ_LOWEST - ID_GPU_FREQ_RESET)
 			g_GPUFreq = 0;
 		if(g_bSupportedGPU)
-		{
-			if(!ConfigureGPURegister(g_GPUFreq + 5))
-			{
-				MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-				DestroyWindow(hWnd);
-				break;
-			}
-		}
+			ConfigureGPURegister(g_GPUFreq + 5);
 		if(g_bFreqNominal)
 			FixCPUFrequencyNominal();
 		if(g_bDisableEIST)
@@ -1277,14 +1277,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case ID_SELECTION2:
 		case ID_SELECTION3:
 		case ID_SELECTION4:
-			g_Selection = LOWORD(wParam) - ID_SELECTION0;
+			Selection = LOWORD(wParam) - ID_SELECTION0;
 			if(g_bSupportedGPU)
 			{
-				if(!ConfigureGPURegister(g_Selection))
-				{
+				if(ConfigureGPURegister(Selection))
+					g_Selection = Selection;
+				else
 					MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-					DestroyWindow(hWnd);
-				}
 			}
 			UpdateMenu();
 			break;
@@ -1296,8 +1295,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					if(!FixCPUFrequencyNominal())
 					{
+						g_bFreqNominal = FALSE;
 						MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-						DestroyWindow(hWnd);
 					}
 				}
 				else
@@ -1316,8 +1315,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					if(!EnableEIST(FALSE))
 					{
+						g_bDisableEIST = FALSE;
 						MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-						DestroyWindow(hWnd);
 					}
 				}
 				else
@@ -1333,8 +1332,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					if(!EnableIDA(FALSE))
 					{
+						g_bDisableIDA = FALSE;
 						MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-						DestroyWindow(hWnd);
 					}
 				}
 				else
@@ -1350,8 +1349,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					if(!EnableC1E(FALSE))
 					{
+						g_bDisableC1E = FALSE;
 						MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-						DestroyWindow(hWnd);
 					}
 				}
 				else
@@ -1367,8 +1366,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					if(!EnableBDPROCHOT(FALSE))
 					{
+						g_bDisableBDPROCHOT = FALSE;
 						MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-						DestroyWindow(hWnd);
 					}
 				}
 				else
@@ -1384,8 +1383,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					if(!EnableRAPL(FALSE))
 					{
+						g_bDisableRAPL = FALSE;
 						MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-						DestroyWindow(hWnd);
 					}
 				}
 				else
@@ -1401,8 +1400,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					if(!EnableMCH59A0(FALSE))
 					{
+						g_bDisableMCH59A0 = FALSE;
 						MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-						DestroyWindow(hWnd);
 					}
 				}
 				else
@@ -1413,14 +1412,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case ID_GPU_FREQ_RESET:
 		case ID_GPU_FREQ_HIGHEST:
 		case ID_GPU_FREQ_LOWEST:
-			g_GPUFreq = LOWORD(wParam) - ID_GPU_FREQ_RESET;
+			GPUFreq = LOWORD(wParam) - ID_GPU_FREQ_RESET;
 			if(g_bSupportedGPU)
 			{
-				if(!ConfigureGPURegister(g_GPUFreq + 5))
-				{
+				if(ConfigureGPURegister(GPUFreq + 5))
+					g_GPUFreq = GPUFreq;
+				else
 					MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
-					DestroyWindow(hWnd);
-				}
 			}
 			UpdateMenu();
 			break;

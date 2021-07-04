@@ -1,15 +1,15 @@
 //////////////////////////////////////////////////////////////////////
 //                                                                  //
-//          Dithering Settings for Intel Graphics Ver 1.14          //
+//        Dithering Settings for Integrated Graphics Ver 2.0        //
 //                                                                  //
 //////////////////////////////////////////////////////////////////////
 
-2021/01/14
+2021/07/04
 川本優
 
 //////////////////////////このソフトについて//////////////////////////
 
-このソフトは、Intel製グラフィックスを搭載したノートパソコン上で、
+このソフトは、Intel製またはAMD製CPUを搭載したノートパソコン上で、
 ディザリングの設定を変更し、画面の画質を向上させるためのものです。
 ほとんどのノートパソコンの液晶ディスプレイは各色6bitしか表現できず、
 約26万色以上の発色はディザリングにより実現されています。
@@ -36,11 +36,13 @@ Spatial (default)
 空間的ディザリングを選択します。
 これはほとんどの機種で既定で設定されています。
 中間色を隣接する4個のピクセルの平均値で表現します。
+AMD製グラフィックスではノイズパターンで表現します。
 一般的な6bit液晶では約1620万色まで表現できるようになりますが、
 特有の斑点模様が見える場合があります。
 
 Spatio-Temporal 1 (better color)
 空間的時間的ディザリングを選択します。
+AMD製グラフィックスではフレームランダム空間的ディザリングになります。
 空間的ディザリングの斑点模様のパターンを時間的に変化させることで
 斑点模様が見えないようにします。
 一般的な6bit液晶では約1620万色まで表現できるようになりますが、
@@ -48,6 +50,7 @@ Spatio-Temporal 1 (better color)
 
 Spatio-Temporal 2 (may not work)
 空間的時間的ディザリングを選択します。
+AMD製グラフィックスではFRCディザリングになります。
 一部の機種では動作しない場合があります。
 Spatio-Temporal 1 (better)でちらつきが見える場合に選択してください。
 空間的ディザリングの斑点模様のパターンを時間的に変化させることで
@@ -57,6 +60,7 @@ Spatio-Temporal 1 (better)でちらつきが見える場合に選択してください。
 
 Temporal (may not work)
 時間的ディザリングを選択します。
+AMD製グラフィックスでは相当する機能が無いため動作しません。
 一部の機種では動作しない場合があります。
 中間色を連続する4フレームの平均値で表現します。
 一般的な6bit液晶では約1620万色まで表現できるようになりますが、
@@ -67,14 +71,17 @@ GPU動作周波数---------------------------------------------------------
 Reset to the system default
 GPUの動作周波数をシステムの規定値に戻します。
 グラフィックスの性能はアプリケーションに応じて自動的に調整されます。
+AMD製グラフィックスでは未実装のため動作しません。
 
 Fix to the highest
 GPUの動作周波数を最高値に固定します。
 グラフィックスの性能は常に最高となり、消費電力が増加します。
+AMD製グラフィックスでは未実装のため動作しません。
 
 Fix to the lowest
 GPUの動作周波数を最低値に固定します。
 グラフィックスの性能が常に最低となり、消費電力が減少します。
+AMD製グラフィックスでは未実装のため動作しません。
 
 その他トラブルシューティング用機能------------------------------------
 
@@ -83,45 +90,52 @@ CPUの動作周波数を公称値に固定します。
 グラフィックスの動作が不安定になる場合に選択してください。
 CPUの省電力機能が一部無効になるため消費電力が増加します。
 CPUの動作速度が制限されるため性能が低下する場合があります。
+AMD製CPUでは動作しません。
 
 Disable Enhanced Intel SpeedStep Technology
 Enhanced Intel SpeedStep Technologyを無効にします。
 グラフィックスの性能が著しく低下する場合にのみ選択してください。
 CPUの省電力機能が一部無効になるため消費電力が増加します。
+AMD製CPUでは動作しません。
 
 Disable Intel Turbo Boost Technology
 Intel Turbo Boost Technologyを無効にします。
 グラフィックスの動作が不安定になる場合に選択してください。
 CPUの動作速度が制限されるため性能が低下する場合があります。
+AMD製CPUでは動作しません。
 
 Disable Enhanced Halt State (C1E)
 Enhanced Halt Stateを無効にします。
 グラフィックスの性能が著しく低下する場合にのみ選択してください。
 CPUの省電力機能が一部無効になるため消費電力が増加します。
+AMD製CPUでは動作しません。
 
 Disable BD PROCHOT signal
 BD PROCHOT信号を無効にします。
 グラフィックスの性能が著しく低下する場合にのみ選択してください。
 電源の保護機能が一部無効になり、消費電力が増加する可能性があります。
+AMD製CPUでは動作しません。
 
 Disable Running Average Power Limit
 Running Average Power Limitを無効にします。
 グラフィックスの性能が著しく低下する場合にのみ選択してください。
 電源の保護機能が無効になり、システムが不安定になる可能性があります。
+AMD製CPUでは動作しません。
 
 Disable TDP limit (MCH register 59A0)
 TDP制限を無効にします。
 グラフィックスの性能が著しく低下する場合にのみ選択してください。
 電源の保護機能が無効になり、システムが不安定になる可能性があります。
+AMD製CPUでは動作しません。
 
 自動実行--------------------------------------------------------------
 
 Register to the Windows startup
-Windowsの起動時にDithering Settings for Intel Graphicsを自動的に
+Windowsの起動時にDithering Settings for Integrated Graphicsを自動的に
 起動するようにします。
 
 Unregister from the Windows startup
-Windowsの起動時にDithering Settings for Intel Graphicsを自動的に
+Windowsの起動時にDithering Settings for Integrated Graphicsを自動的に
 起動しないようにします。
 
 システムメニュー------------------------------------------------------
@@ -131,17 +145,19 @@ Save current settings
 保存した設定は次回起動時に自動的に読み込まれます。
 
 Exit
-Dithering Settings for Intel Graphicsを終了します。
+Dithering Settings for Integrated Graphicsを終了します。
 
 ///////////////////////////////動作環境///////////////////////////////
 
-OS		Windows 10 Version 2004
+OS		Windows 10 Version 21H1
 		Windows 8.1 Update
 		Windows 8
 		Windows 7 Service Pack 1
 		Windows Vista Service Pack 2
 CPU		Intel第2世代Core iシリーズ以降
+		AMD Ryzenシリーズ以降
 グラフィックス	Intel第6世代以降
+		AMD GCN第5世代以降
 
 ///////////////////////////////版権など///////////////////////////////
 
@@ -237,5 +253,13 @@ Ver 1.13
 
 Ver 1.14
 第12世代に対応。
+軽微なバグを修正。
+
+Ver 2.0
+ソフト名をDithering Settings for Intel Graphicsより変更。
+AMD製グラフィックスに試験的に対応。
+第11世代の対応機種を追加。
+第12世代の対応機種を追加。
+レジスタへの書き込み失敗時に終了しないように変更。
 軽微なバグを修正。
 
