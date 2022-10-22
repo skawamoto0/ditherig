@@ -29,6 +29,7 @@ BOOL g_bDisableBDPROCHOT;
 BOOL g_bDisableRAPL;
 BOOL g_bDisableMCH59A0;
 DWORD g_GPUFreq;
+DWORD g_TypeOverride;
 CHAR* g_pDatabase;
 DWORD_PTR g_PhysicalAddress;
 DWORD_PTR g_PhysicalSize;
@@ -254,7 +255,7 @@ BOOL FindConfigFromDatabase(WORD VendorID, WORD DeviceID, DWORD Selection, DWORD
 			if(!pNextRow)
 				pNextRow = strchr(p, '\0');
 		}
-		if((WORD)strtoul(p, &p, 0) == 2)
+		if(strtoul(p, &p, 0) == 2)
 		{
 			pNextColumn = strchr(p, ',');
 			if(pNextColumn && pNextColumn < pNextRow)
@@ -296,6 +297,8 @@ BOOL FindConfigFromDatabase(WORD VendorID, WORD DeviceID, DWORD Selection, DWORD
 		if(*p == '\n')
 			p++;
 	}
+	if(g_TypeOverride != 0)
+		Type = g_TypeOverride;
 	if(Type != 0)
 	{
 		p = g_pDatabase;
@@ -308,13 +311,13 @@ BOOL FindConfigFromDatabase(WORD VendorID, WORD DeviceID, DWORD Selection, DWORD
 				if(!pNextRow)
 					pNextRow = strchr(p, '\0');
 			}
-			if((WORD)strtoul(p, &p, 0) == 1)
+			if(strtoul(p, &p, 0) == 1)
 			{
 				pNextColumn = strchr(p, ',');
 				if(pNextColumn && pNextColumn < pNextRow)
 				{
 					p = pNextColumn + 1;
-					if((WORD)strtoul(p, &p, 0) == Type)
+					if((DWORD)strtoul(p, &p, 0) == Type)
 					{
 						pNextColumn = strchr(p, ',');
 						if(pNextColumn && pNextColumn < pNextRow)
@@ -383,6 +386,70 @@ BOOL FindConfigFromDatabase(WORD VendorID, WORD DeviceID, DWORD Selection, DWORD
 	return bResult;
 }
 
+BOOL FindQuestionFromDatabase(DWORD Case, BOOL* Branch, DWORD* CaseYes, DWORD* CaseNo, CHAR* Question)
+{
+	BOOL bResult;
+	CHAR* p;
+	CHAR* pNextRow;
+	CHAR* pNextColumn;
+	bResult = FALSE;
+	p = g_pDatabase;
+	while(*p != '\0')
+	{
+		pNextRow = strchr(p, '\r');
+		if(!pNextRow)
+		{
+			pNextRow = strchr(p, '\n');
+			if(!pNextRow)
+				pNextRow = strchr(p, '\0');
+		}
+		if(strtoul(p, &p, 0) == 3)
+		{
+			pNextColumn = strchr(p, ',');
+			if(pNextColumn && pNextColumn < pNextRow)
+			{
+				p = pNextColumn + 1;
+				if((DWORD)strtoul(p, &p, 0) == Case)
+				{
+					pNextColumn = strchr(p, ',');
+					if(pNextColumn && pNextColumn < pNextRow)
+					{
+						p = pNextColumn + 1;
+						*Branch = strtoul(p, &p, 0);
+						pNextColumn = strchr(p, ',');
+						if(pNextColumn && pNextColumn < pNextRow)
+						{
+							p = pNextColumn + 1;
+							*CaseYes = strtoul(p, &p, 0);
+							pNextColumn = strchr(p, ',');
+							if(pNextColumn && pNextColumn < pNextRow)
+							{
+								p = pNextColumn + 1;
+								*CaseNo = strtoul(p, &p, 0);
+								pNextColumn = strchr(p, ',');
+								if(pNextColumn && pNextColumn < pNextRow)
+								{
+									p = pNextColumn + 1;
+									memcpy(Question, p, (size_t)pNextRow - (size_t)p);
+									Question[pNextRow - p] = '\0';
+									bResult = TRUE;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		p = pNextRow;
+		if(*p == '\r')
+			p++;
+		if(*p == '\n')
+			p++;
+	}
+	return bResult;
+}
+
 BOOL IsSupportedGPU()
 {
 	BOOL bResult;
@@ -427,7 +494,6 @@ BOOL GetGPUInfo(TCHAR* Text1, TCHAR* Text2)
 	DWORD RegisterMask;
 	DWORD RegisterData;
 	CHAR Info[256];
-	TCHAR Info1[256];
 	bResult = FALSE;
 	Index = 0;
 	VendorID = 0;
@@ -451,6 +517,51 @@ BOOL GetGPUInfo(TCHAR* Text1, TCHAR* Text2)
 #else
 	strcpy(Text2, Info);
 #endif
+	return bResult;
+}
+
+BOOL IdentifyGPUByQuestions()
+{
+	BOOL bResult;
+	DWORD Case;
+	BOOL Branch;
+	DWORD CaseYes;
+	DWORD CaseNo;
+	CHAR Question[256];
+	TCHAR Question1[256];
+	bResult = FALSE;
+	Case = 0;
+	while(FindQuestionFromDatabase(Case, &Branch, &CaseYes, &CaseNo, Question))
+	{
+#ifdef UNICODE
+		MultiByteToWideChar(CP_UTF8, 0, Question, -1, Question1, 256);
+#else
+		strcpy(Question1, Question);
+#endif
+		if(Branch)
+		{
+			switch(MessageBox(g_hWnd, Question1, APPLICATION_NAME, MB_YESNOCANCEL))
+			{
+			case IDYES:
+				Case = CaseYes;
+				break;
+			case IDNO:
+				Case = CaseNo;
+				break;
+			default:
+				bResult = TRUE;
+				break;
+			}
+		}
+		else
+		{
+			MessageBox(g_hWnd, Question1, APPLICATION_NAME, MB_OK);
+			g_TypeOverride = CaseYes;
+			bResult = TRUE;
+		}
+		if(bResult)
+			break;
+	}
 	return bResult;
 }
 
@@ -1029,10 +1140,12 @@ void LoadSettings()
 			RegQueryValueEx(hAppKey, _T("DisableBDPROCHOT"), NULL, NULL, (BYTE*)&g_bDisableBDPROCHOT, &Data);
 			Data = sizeof(BOOL);
 			RegQueryValueEx(hAppKey, _T("DisableRAPL"), NULL, NULL, (BYTE*)&g_bDisableRAPL, &Data);
-			Data = sizeof(DWORD);
+			Data = sizeof(BOOL);
 			RegQueryValueEx(hAppKey, _T("DisableMCH59A0"), NULL, NULL, (BYTE*)&g_bDisableMCH59A0, &Data);
 			Data = sizeof(DWORD);
 			RegQueryValueEx(hAppKey, _T("GPUFreq"), NULL, NULL, (BYTE*)&g_GPUFreq, &Data);
+			Data = sizeof(DWORD);
+			RegQueryValueEx(hAppKey, _T("TypeOverride"), NULL, NULL, (BYTE*)&g_TypeOverride, &Data);
 			RegCloseKey(hAppKey);
 		}
 		RegCloseKey(hKey);
@@ -1058,6 +1171,7 @@ void SaveSettings()
 			RegSetValueEx(hAppKey, _T("DisableRAPL"), 0, REG_DWORD, (BYTE*)&g_bDisableRAPL, sizeof(BOOL));
 			RegSetValueEx(hAppKey, _T("DisableMCH59A0"), 0, REG_DWORD, (BYTE*)&g_bDisableMCH59A0, sizeof(BOOL));
 			RegSetValueEx(hAppKey, _T("GPUFreq"), 0, REG_DWORD, (BYTE*)&g_GPUFreq, sizeof(DWORD));
+			RegSetValueEx(hAppKey, _T("TypeOverride"), 0, REG_DWORD, (BYTE*)&g_TypeOverride, sizeof(DWORD));
 			RegCloseKey(hAppKey);
 		}
 		RegCloseKey(hKey);
@@ -1088,6 +1202,7 @@ void UpdateMenu()
 	SetMenuItemInfo(hMenu, ID_GPU_FREQ_RESET, FALSE, &mii);
 	SetMenuItemInfo(hMenu, ID_GPU_FREQ_HIGHEST, FALSE, &mii);
 	SetMenuItemInfo(hMenu, ID_GPU_FREQ_LOWEST, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_IDENTIFY, FALSE, &mii);
 	mii.fState |= MFS_CHECKED;
 	SetMenuItemInfo(hMenu, (UINT)(g_Selection + ID_SELECTION0), FALSE, &mii);
 	if(g_bFreqNominal)
@@ -1105,6 +1220,8 @@ void UpdateMenu()
 	if(g_bDisableMCH59A0)
 		SetMenuItemInfo(hMenu, ID_DISABLE_MCH59A0, FALSE, &mii);
 	SetMenuItemInfo(hMenu, (UINT)(g_GPUFreq + ID_GPU_FREQ_RESET), FALSE, &mii);
+	if(g_TypeOverride != 0)
+		SetMenuItemInfo(hMenu, ID_IDENTIFY, FALSE, &mii);
 	if(!g_bSupportedGPU)
 	{
 		GetMenuItemInfo(hMenu, ID_SELECTION0, FALSE, &mii);
@@ -1421,6 +1538,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					MessageBox(hWnd, _T("Failed to configure the registers."), APPLICATION_NAME, MB_OK);
 			}
 			UpdateMenu();
+			break;
+		case ID_IDENTIFY:
+			if(IdentifyGPUByQuestions())
+			{
+				g_bSupportedGPU = IsSupportedGPU();
+				UpdateMenu();
+			}
 			break;
 		}
 		break;
