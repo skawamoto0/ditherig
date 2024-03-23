@@ -65,37 +65,52 @@ IDR_MENU1 MENU
 BEGIN
     POPUP " "
     BEGIN
-        MENUITEM "--- Dithering Settings for Integrated Graphics Ver 2.1 ---", ID_TITLE, INACTIVE
+        MENUITEM "--- Dithering Settings for Integrated Graphics Ver 2.2 ---", ID_TITLE, INACTIVE
         MENUITEM " ",                           ID_INFO1, INACTIVE
         MENUITEM " ",                           ID_INFO2, INACTIVE
         MENUITEM "Identify GPU by questions...", ID_IDENTIFY
         MENUITEM SEPARATOR
-        MENUITEM "--- Dithering algorithms ---", ID_TITLE, INACTIVE
-        MENUITEM "Disable all dithering functions (better resolution)", ID_SELECTION0
-        MENUITEM "Spatial (default)",           ID_SELECTION1
-        MENUITEM "Spatio-Temporal 1 (better color)", ID_SELECTION2
-        MENUITEM "Spatio-Temporal 2 (may not work)", ID_SELECTION3
-        MENUITEM "Temporal (may not work)",     ID_SELECTION4
+        POPUP "Uncontrolled ports"
+        BEGIN
+            MENUITEM "Port 0",                      ID_PORT0
+            MENUITEM "Port 1",                      ID_PORT1
+            MENUITEM "Port 2",                      ID_PORT2
+            MENUITEM "Port 3",                      ID_PORT3
+            MENUITEM "Port 4",                      ID_PORT4
+            MENUITEM "Port 5",                      ID_PORT5
+        END
+        POPUP "Dithering algorithms"
+        BEGIN
+            MENUITEM "Disable all dithering functions (better resolution)", ID_SELECTION0
+            MENUITEM "Spatial (default)",           ID_SELECTION1
+            MENUITEM "Spatio-Temporal 1 (better color)", ID_SELECTION2
+            MENUITEM "Spatio-Temporal 2 (may not work)", ID_SELECTION3
+            MENUITEM "Temporal (may not work)",     ID_SELECTION4
+        END
+        POPUP "GPU frequency"
+        BEGIN
+            MENUITEM "Reset to the system default", ID_GPU_FREQ_RESET
+            MENUITEM "Fix to the highest",          ID_GPU_FREQ_HIGHEST
+            MENUITEM "Fix to the lowest",           ID_GPU_FREQ_LOWEST
+        END
+        POPUP "Miscellaneous features for troubleshooting"
+        BEGIN
+            MENUITEM "Fix CPU frequencies at the nominal value", ID_FREQ_NOMINAL
+            MENUITEM "Disable Enhanced Intel SpeedStep Technology", ID_DISABLE_EIST
+            MENUITEM "Disable Intel Turbo Boost Technology", ID_DISABLE_IDA
+            MENUITEM "Disable Enhanced Halt State (C1E)", ID_DISABLE_C1E
+            MENUITEM "Disable BD PROCHOT signal",   ID_DISABLE_BDPROCHOT
+            MENUITEM "Disable Running Average Power Limit", ID_DISABLE_RAPL
+            MENUITEM "Disable TDP limit (MCH register 59A0)", ID_DISABLE_MCH59A0
+        END
         MENUITEM SEPARATOR
-        MENUITEM "--- GPU frequency ---",       ID_TITLE, INACTIVE
-        MENUITEM "Reset to the system default", ID_GPU_FREQ_RESET
-        MENUITEM "Fix to the highest",          ID_GPU_FREQ_HIGHEST
-        MENUITEM "Fix to the lowest",           ID_GPU_FREQ_LOWEST
-        MENUITEM SEPARATOR
-        MENUITEM "--- Miscellaneous features for troubleshooting ---", ID_TITLE, INACTIVE
-        MENUITEM "Fix CPU frequencies at the nominal value", ID_FREQ_NOMINAL
-        MENUITEM "Disable Enhanced Intel SpeedStep Technology", ID_DISABLE_EIST
-        MENUITEM "Disable Intel Turbo Boost Technology", ID_DISABLE_IDA
-        MENUITEM "Disable Enhanced Halt State (C1E)", ID_DISABLE_C1E
-        MENUITEM "Disable BD PROCHOT signal",   ID_DISABLE_BDPROCHOT
-        MENUITEM "Disable Running Average Power Limit", ID_DISABLE_RAPL
-        MENUITEM "Disable TDP limit (MCH register 59A0)", ID_DISABLE_MCH59A0
-        MENUITEM SEPARATOR
-        MENUITEM "--- Automatic running ---",   ID_TITLE, INACTIVE
-        MENUITEM "Register to the Windows startup", ID_REGISTER
-        MENUITEM "Unregister from the Windows startup", ID_UNREGISTER
-        MENUITEM SEPARATOR
+        POPUP "Automatic running"
+        BEGIN
+            MENUITEM "Register to the Windows startup", ID_REGISTER
+            MENUITEM "Unregister from the Windows startup", ID_UNREGISTER
+        END
         MENUITEM "Save current settings",       ID_SAVE
+        MENUITEM SEPARATOR
         MENUITEM "Exit",                        ID_EXIT
     END
 END
@@ -107,8 +122,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,0,1
- PRODUCTVERSION 2,1,0,1
+ FILEVERSION 2,2,0,1
+ PRODUCTVERSION 2,2,0,1
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -124,12 +139,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Dithering Settings for Integrated Graphics"
-            VALUE "FileVersion", "2, 1, 0, 1"
+            VALUE "FileVersion", "2, 2, 0, 1"
             VALUE "InternalName", "ditherig"
-            VALUE "LegalCopyright", "Copyright (C) 2013-2022 Suguru Kawamoto"
+            VALUE "LegalCopyright", "Copyright (C) 2013-2024 Suguru Kawamoto"
             VALUE "OriginalFilename", "ditherig.exe"
             VALUE "ProductName", "Dithering Settings for Integrated Graphics"
-            VALUE "ProductVersion", "2, 1, 0, 1"
+            VALUE "ProductVersion", "2, 2, 0, 1"
         END
     END
     BLOCK "VarFileInfo"

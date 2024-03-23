@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////
 //                                                                  //
-//        Dithering Settings for Integrated Graphics Ver 2.1        //
+//        Dithering Settings for Integrated Graphics Ver 2.2        //
 //                                                                  //
 //////////////////////////////////////////////////////////////////////
 
-2022/11/22
+2024/03/23
 川本優
 
 //////////////////////////このソフトについて//////////////////////////
@@ -30,6 +30,12 @@ Identify GPU by questions...
 データベースに載っていないグラフィックスを制御できるようになります。
 グラフィックスがデータベースに載っている場合も強制的に他の種類のものと
 して扱うことができますが、システムが不安定になる可能性があります。
+
+Uncontrolled ports
+ディザリングを制御しない内部ポートを選択します。
+内部ポートはWindowsの解像度設定によらず物理的なディスプレイと1対1で
+対応しています。
+ディスプレイ自体にディザリング機能がある場合に使用してください。
 
 ディザリングアルゴリズム----------------------------------------------
 
@@ -155,11 +161,10 @@ Dithering Settings for Integrated Graphicsを終了します。
 
 ///////////////////////////////動作環境///////////////////////////////
 
-OS		Windows 10 Version 21H1
+OS		Windows 11 Version 23H2
+		Windows 10 Version 23H2
 		Windows 8.1 Update
-		Windows 8
 		Windows 7 Service Pack 1
-		Windows Vista Service Pack 2
 CPU		Intel第2世代Core iシリーズ以降
 		AMD Ryzenシリーズ以降
 グラフィックス	Intel第6世代以降
@@ -276,4 +281,12 @@ AMD Rembrandtに対応。
 AMD Barceloに対応。
 AMD Raphaelに対応。
 質問形式で未知のグラフィックスを判定する機能を追加。
+
+Ver 2.2
+Intel Meteor Lakeに対応。
+AMD Phoenixに対応。
+AMD Hawk Pointに対応。
+ディスプレイの電源が変化した場合に再設定するように変更。
+内部ポートの制御を個別に無効化できるように変更。
+AMD製グラフィックスと10bitディスプレイの組み合わせに対応。
 

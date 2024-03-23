@@ -27,13 +27,19 @@
 #define ID_INFO1                        40021
 #define ID_INFO2                        40022
 #define ID_IDENTIFY                     40023
+#define ID_PORT0                        40024
+#define ID_PORT1                        40025
+#define ID_PORT2                        40026
+#define ID_PORT3                        40027
+#define ID_PORT4                        40028
+#define ID_PORT5                        40029
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
-#define _APS_NEXT_COMMAND_VALUE         40024
+#define _APS_NEXT_COMMAND_VALUE         40030
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

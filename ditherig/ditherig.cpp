@@ -30,6 +30,7 @@ BOOL g_bDisableRAPL;
 BOOL g_bDisableMCH59A0;
 DWORD g_GPUFreq;
 DWORD g_TypeOverride;
+DWORD g_Uncontrolled;
 CHAR* g_pDatabase;
 DWORD_PTR g_PhysicalAddress;
 DWORD_PTR g_PhysicalSize;
@@ -37,7 +38,9 @@ HANDLE g_hPhysicalMemory;
 PBYTE g_pPhysicalMemory;
 DWORD g_TimerWaitCount;
 UINT g_TaskbarCreated;
-HPOWERNOTIFY g_hPowerNotify;
+HPOWERNOTIFY g_hPowerNotify1;
+HPOWERNOTIFY g_hPowerNotify2;
+HPOWERNOTIFY g_hPowerNotify3;
 
 void GetDirFromFullPath(LPTSTR Dest, LPCTSTR File)
 {
@@ -236,7 +239,7 @@ void UnloadDatabase()
 	g_pDatabase = NULL;
 }
 
-BOOL FindConfigFromDatabase(WORD VendorID, WORD DeviceID, DWORD Selection, DWORD Count, DWORD* pBAR1Address, DWORD* pBAR2Address, DWORD_PTR* pRegisterAddress, DWORD_PTR* pRegisterSize, DWORD* pRegisterMask, DWORD* pRegisterData, CHAR* Info)
+BOOL FindConfigFromDatabase(WORD VendorID, WORD DeviceID, DWORD Selection, DWORD Count, DWORD* pPort, DWORD* pBAR1Address, DWORD* pBAR2Address, DWORD_PTR* pRegisterAddress, DWORD_PTR* pRegisterSize, DWORD* pRegisterMask, DWORD* pRegisterData, CHAR* Info)
 {
 	BOOL bResult;
 	DWORD Type;
@@ -335,34 +338,40 @@ BOOL FindConfigFromDatabase(WORD VendorID, WORD DeviceID, DWORD Selection, DWORD
 										if(pNextColumn && pNextColumn < pNextRow)
 										{
 											p = pNextColumn + 1;
-											*pBAR1Address = strtoul(p, &p, 0);
+											*pPort = strtoul(p, &p, 0);
 											pNextColumn = strchr(p, ',');
 											if(pNextColumn && pNextColumn < pNextRow)
 											{
 												p = pNextColumn + 1;
-												*pBAR2Address = strtoul(p, &p, 0);
+												*pBAR1Address = strtoul(p, &p, 0);
 												pNextColumn = strchr(p, ',');
 												if(pNextColumn && pNextColumn < pNextRow)
 												{
 													p = pNextColumn + 1;
-													*pRegisterAddress = strtoul(p, &p, 0);
+													*pBAR2Address = strtoul(p, &p, 0);
 													pNextColumn = strchr(p, ',');
 													if(pNextColumn && pNextColumn < pNextRow)
 													{
 														p = pNextColumn + 1;
-														*pRegisterSize = strtoul(p, &p, 0);
+														*pRegisterAddress = strtoul(p, &p, 0);
 														pNextColumn = strchr(p, ',');
 														if(pNextColumn && pNextColumn < pNextRow)
 														{
 															p = pNextColumn + 1;
-															*pRegisterMask = strtoul(p, &p, 0);
+															*pRegisterSize = strtoul(p, &p, 0);
 															pNextColumn = strchr(p, ',');
 															if(pNextColumn && pNextColumn < pNextRow)
 															{
 																p = pNextColumn + 1;
-																*pRegisterData = strtoul(p, &p, 0);
-																bResult = TRUE;
-																break;
+																*pRegisterMask = strtoul(p, &p, 0);
+																pNextColumn = strchr(p, ',');
+																if(pNextColumn && pNextColumn < pNextRow)
+																{
+																	p = pNextColumn + 1;
+																	*pRegisterData = strtoul(p, &p, 0);
+																	bResult = TRUE;
+																	break;
+																}
 															}
 														}
 													}
@@ -457,6 +466,7 @@ BOOL IsSupportedGPU()
 	DWORD PCIAddress;
 	WORD VendorID;
 	WORD DeviceID;
+	DWORD Port;
 	DWORD BAR1Address;
 	DWORD BAR2Address;
 	DWORD_PTR RegisterAddress;
@@ -466,10 +476,10 @@ BOOL IsSupportedGPU()
 	bResult = FALSE;
 	Index = 0;
 	while((PCIAddress = FindPciDeviceByClass(0x03, 0x00, 0x00, Index)) != 0xffffffff)
-	{ 
+	{
 		if(ReadPciConfigWordEx(PCIAddress, 0x00000000, &VendorID) && ReadPciConfigWordEx(PCIAddress, 0x00000002, &DeviceID))
 		{
-			if(FindConfigFromDatabase(VendorID, DeviceID, 0, 0, &BAR1Address, &BAR2Address, &RegisterAddress, &RegisterSize, &RegisterMask, &RegisterData, NULL))
+			if(FindConfigFromDatabase(VendorID, DeviceID, 0, 0, &Port, &BAR1Address, &BAR2Address, &RegisterAddress, &RegisterSize, &RegisterMask, &RegisterData, NULL))
 			{
 				bResult = TRUE;
 				break;
@@ -487,6 +497,7 @@ BOOL GetGPUInfo(TCHAR* Text1, TCHAR* Text2)
 	DWORD PCIAddress;
 	WORD VendorID;
 	WORD DeviceID;
+	DWORD Port;
 	DWORD BAR1Address;
 	DWORD BAR2Address;
 	DWORD_PTR RegisterAddress;
@@ -500,10 +511,10 @@ BOOL GetGPUInfo(TCHAR* Text1, TCHAR* Text2)
 	DeviceID = 0;
 	strcpy(Info, "Graphics not found in the database");
 	while((PCIAddress = FindPciDeviceByClass(0x03, 0x00, 0x00, Index)) != 0xffffffff)
-	{ 
+	{
 		if(ReadPciConfigWordEx(PCIAddress, 0x00000000, &VendorID) && ReadPciConfigWordEx(PCIAddress, 0x00000002, &DeviceID))
 		{
-			if(FindConfigFromDatabase(VendorID, DeviceID, 0, 0, &BAR1Address, &BAR2Address, &RegisterAddress, &RegisterSize, &RegisterMask, &RegisterData, Info))
+			if(FindConfigFromDatabase(VendorID, DeviceID, 0, 0, &Port, &BAR1Address, &BAR2Address, &RegisterAddress, &RegisterSize, &RegisterMask, &RegisterData, Info))
 			{
 				bResult = TRUE;
 				break;
@@ -573,6 +584,7 @@ BOOL ConfigureGPURegister(DWORD Selection)
 	WORD VendorID;
 	WORD DeviceID;
 	DWORD Count;
+	DWORD Port;
 	DWORD BAR1Address;
 	DWORD BAR2Address;
 	DWORD_PTR RegisterAddress;
@@ -587,13 +599,15 @@ BOOL ConfigureGPURegister(DWORD Selection)
 	bResult = FALSE;
 	Index = 0;
 	while((PCIAddress = FindPciDeviceByClass(0x03, 0x00, 0x00, Index)) != 0xffffffff)
-	{ 
+	{
 		if(ReadPciConfigWordEx(PCIAddress, 0x00000000, &VendorID) && ReadPciConfigWordEx(PCIAddress, 0x00000002, &DeviceID))
 		{
 			Count = 0;
-			while(FindConfigFromDatabase(VendorID, DeviceID, Selection, Count, &BAR1Address, &BAR2Address, &RegisterAddress, &RegisterSize, &RegisterMask, &RegisterData, NULL))
+			while(FindConfigFromDatabase(VendorID, DeviceID, Selection, Count, &Port, &BAR1Address, &BAR2Address, &RegisterAddress, &RegisterSize, &RegisterMask, &RegisterData, NULL))
 			{
-				if(RegisterMask != 0)
+				if((Port & g_Uncontrolled) || RegisterMask == 0)
+					bResult = TRUE;
+				else
 				{
 					if(ReadPciConfigDwordEx(PCIAddress, BAR1Address, &BAR1) && ReadPciConfigDwordEx(PCIAddress, BAR2Address, &BAR2))
 					{
@@ -619,8 +633,6 @@ BOOL ConfigureGPURegister(DWORD Selection)
 						}
 					}
 				}
-				else
-					bResult = TRUE;
 				Count++;
 			}
 		}
@@ -808,7 +820,7 @@ BOOL EnableMCH59A0(BOOL bEnable)
 	bResult = FALSE;
 	PCIAddress = FindPciDeviceByClass(0x06, 0x00, 0x00, 0);
 	if(PCIAddress != 0xffffffff)
-	{ 
+	{
 		if(ReadPciConfigWordEx(PCIAddress, 0x00000000, &VendorID))
 		{
 			if(VendorID == 0x8086)
@@ -1146,6 +1158,8 @@ void LoadSettings()
 			RegQueryValueEx(hAppKey, _T("GPUFreq"), NULL, NULL, (BYTE*)&g_GPUFreq, &Data);
 			Data = sizeof(DWORD);
 			RegQueryValueEx(hAppKey, _T("TypeOverride"), NULL, NULL, (BYTE*)&g_TypeOverride, &Data);
+			Data = sizeof(DWORD);
+			RegQueryValueEx(hAppKey, _T("Uncontrolled"), NULL, NULL, (BYTE*)&g_Uncontrolled, &Data);
 			RegCloseKey(hAppKey);
 		}
 		RegCloseKey(hKey);
@@ -1172,6 +1186,7 @@ void SaveSettings()
 			RegSetValueEx(hAppKey, _T("DisableMCH59A0"), 0, REG_DWORD, (BYTE*)&g_bDisableMCH59A0, sizeof(BOOL));
 			RegSetValueEx(hAppKey, _T("GPUFreq"), 0, REG_DWORD, (BYTE*)&g_GPUFreq, sizeof(DWORD));
 			RegSetValueEx(hAppKey, _T("TypeOverride"), 0, REG_DWORD, (BYTE*)&g_TypeOverride, sizeof(DWORD));
+			RegSetValueEx(hAppKey, _T("Uncontrolled"), 0, REG_DWORD, (BYTE*)&g_Uncontrolled, sizeof(DWORD));
 			RegCloseKey(hAppKey);
 		}
 		RegCloseKey(hKey);
@@ -1182,6 +1197,7 @@ void UpdateMenu()
 {
 	HMENU hMenu;
 	MENUITEMINFO mii;
+	DWORD i;
 	hMenu = GetSubMenu(g_hMenu, 0);
 	mii.cbSize = sizeof(MENUITEMINFO);
 	mii.fMask = MIIM_STATE;
@@ -1203,6 +1219,12 @@ void UpdateMenu()
 	SetMenuItemInfo(hMenu, ID_GPU_FREQ_HIGHEST, FALSE, &mii);
 	SetMenuItemInfo(hMenu, ID_GPU_FREQ_LOWEST, FALSE, &mii);
 	SetMenuItemInfo(hMenu, ID_IDENTIFY, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_PORT0, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_PORT1, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_PORT2, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_PORT3, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_PORT4, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_PORT5, FALSE, &mii);
 	mii.fState |= MFS_CHECKED;
 	SetMenuItemInfo(hMenu, (UINT)(g_Selection + ID_SELECTION0), FALSE, &mii);
 	if(g_bFreqNominal)
@@ -1222,6 +1244,11 @@ void UpdateMenu()
 	SetMenuItemInfo(hMenu, (UINT)(g_GPUFreq + ID_GPU_FREQ_RESET), FALSE, &mii);
 	if(g_TypeOverride != 0)
 		SetMenuItemInfo(hMenu, ID_IDENTIFY, FALSE, &mii);
+	for(i = 0; i <= ID_PORT5 - ID_PORT0; i++)
+	{
+		if(g_Uncontrolled & (1 << i))
+			SetMenuItemInfo(hMenu, (UINT)(i + ID_PORT0), FALSE, &mii);
+	}
 	if(!g_bSupportedGPU)
 	{
 		GetMenuItemInfo(hMenu, ID_SELECTION0, FALSE, &mii);
@@ -1235,6 +1262,12 @@ void UpdateMenu()
 		SetMenuItemInfo(hMenu, ID_GPU_FREQ_RESET, FALSE, &mii);
 		SetMenuItemInfo(hMenu, ID_GPU_FREQ_HIGHEST, FALSE, &mii);
 		SetMenuItemInfo(hMenu, ID_GPU_FREQ_LOWEST, FALSE, &mii);
+		SetMenuItemInfo(hMenu, ID_PORT0, FALSE, &mii);
+		SetMenuItemInfo(hMenu, ID_PORT1, FALSE, &mii);
+		SetMenuItemInfo(hMenu, ID_PORT2, FALSE, &mii);
+		SetMenuItemInfo(hMenu, ID_PORT3, FALSE, &mii);
+		SetMenuItemInfo(hMenu, ID_PORT4, FALSE, &mii);
+		SetMenuItemInfo(hMenu, ID_PORT5, FALSE, &mii);
 	}
 	mii.fMask = MIIM_STRING;
 	mii.dwTypeData = g_GPUInfo1;
@@ -1270,6 +1303,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	HMENU hMenu;
 	DWORD Selection;
 	DWORD GPUFreq;
+	DWORD Port;
 	switch(uMsg)
 	{
 	case WM_CREATE:
@@ -1347,10 +1381,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			DestroyWindow(hWnd);
 		}
 		g_TaskbarCreated = RegisterWindowMessage(_T("TaskbarCreated"));
-		g_hPowerNotify = RegisterPowerSettingNotification(hWnd, &GUID_LIDSWITCH_STATE_CHANGE, DEVICE_NOTIFY_WINDOW_HANDLE);
+		g_hPowerNotify1 = RegisterPowerSettingNotification(hWnd, &GUID_MONITOR_POWER_ON, DEVICE_NOTIFY_WINDOW_HANDLE);
+		g_hPowerNotify2 = RegisterPowerSettingNotification(hWnd, &GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
+		g_hPowerNotify3 = RegisterPowerSettingNotification(hWnd, &GUID_LIDSWITCH_STATE_CHANGE, DEVICE_NOTIFY_WINDOW_HANDLE);
 		break;
 	case WM_DESTROY:
-		UnregisterPowerSettingNotification(g_hPowerNotify);
+		UnregisterPowerSettingNotification(g_hPowerNotify1);
+		UnregisterPowerSettingNotification(g_hPowerNotify2);
+		UnregisterPowerSettingNotification(g_hPowerNotify3);
 		KillTimer(hWnd, 1);
 		ReadPhysicalMemory(0, NULL, 0);
 		Shell_NotifyIcon(NIM_DELETE, &g_Notify);
@@ -1546,6 +1584,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				UpdateMenu();
 			}
 			break;
+		case ID_PORT0:
+		case ID_PORT1:
+		case ID_PORT2:
+		case ID_PORT3:
+		case ID_PORT4:
+		case ID_PORT5:
+			Port = LOWORD(wParam) - ID_PORT0;
+			g_Uncontrolled ^= 1 << Port;
+			UpdateMenu();
+			break;
 		}
 		break;
 	case WM_TIMER:
@@ -1586,9 +1634,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_POWERBROADCAST:
 		g_TimerWaitCount = 5;
 		return TRUE;
-		break;
-	case WM_DEVICECHANGE:
-		g_TimerWaitCount = 5;
 		break;
 	case WM_USER:
 		switch(lParam)
