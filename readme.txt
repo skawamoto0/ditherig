@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////
 //                                                                  //
-//        Dithering Settings for Integrated Graphics Ver 2.2        //
+//        Dithering Settings for Integrated Graphics Ver 2.3        //
 //                                                                  //
 //////////////////////////////////////////////////////////////////////
 
-2024/03/23
+2025/03/30
 川本優
 
 //////////////////////////このソフトについて//////////////////////////
@@ -161,8 +161,8 @@ Dithering Settings for Integrated Graphicsを終了します。
 
 ///////////////////////////////動作環境///////////////////////////////
 
-OS		Windows 11 Version 23H2
-		Windows 10 Version 23H2
+OS		Windows 11 Version 24H2
+		Windows 10
 		Windows 8.1 Update
 		Windows 7 Service Pack 1
 CPU		Intel第2世代Core iシリーズ以降
@@ -289,4 +289,11 @@ AMD Hawk Pointに対応。
 ディスプレイの電源が変化した場合に再設定するように変更。
 内部ポートの制御を個別に無効化できるように変更。
 AMD製グラフィックスと10bitディスプレイの組み合わせに対応。
+
+Ver 2.3
+Intel Arrow Lakeに対応。
+Intel Lunar Lakeに対応。
+AMD Strix Pointに対応。
+AMD Strix Haloに対応。
+軽微なバグを修正。
 

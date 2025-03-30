@@ -210,6 +210,8 @@
 2,0x8086,0x46d0,4,Intel(R) UHD Graphics (Alder Lake)
 2,0x8086,0x46d1,4,Intel(R) UHD Graphics (Alder Lake)
 2,0x8086,0x46d2,4,Intel(R) UHD Graphics (Alder Lake)
+2,0x8086,0x46d3,4,Intel(R) Graphics (Alder Lake)
+2,0x8086,0x46d4,4,Intel(R) Graphics (Alder Lake)
 2,0x8086,0x4c8a,4,Intel(R) UHD Graphics 750 (Rocket Lake)
 2,0x8086,0x4c8b,4,Intel(R) UHD Graphics 730 (Rocket Lake)
 2,0x8086,0x4c90,4,Intel(R) UHD Graphics P750 (Rocket Lake)
@@ -233,7 +235,16 @@
 2,0x8086,0x5927,3,Intel(R) Iris(R) Plus Graphics 650 (Kaby Lake)
 2,0x8086,0x5a84,3,Intel(R) HD Graphics (Broxton)
 2,0x8086,0x5a85,3,Intel(R) HD Graphics (Broxton)
+2,0x8086,0x6420,4,Intel(R) Graphics (Lunar Lake)
+2,0x8086,0x64a0,4,Intel(R) Arc(TM) Graphics (Lunar Lake)
+2,0x8086,0x64b0,4,Intel(R) Graphics (Lunar Lake)
+2,0x8086,0x7d40,4,Intel(R) Graphics (Meteor Lake)
+2,0x8086,0x7d41,4,Intel(R) Graphics (Arrow Lake)
+2,0x8086,0x7d45,4,Intel(R) Graphics (Meteor Lake)
+2,0x8086,0x7d51,4,Intel(R) Arc(TM) Graphics (Arrow Lake)
 2,0x8086,0x7d55,4,Intel(R) Arc(TM) Graphics (Meteor Lake)
+2,0x8086,0x7d67,4,Intel(R) Graphics (Arrow Lake)
+2,0x8086,0x7dd1,4,Intel(R) Graphics (Arrow Lake)
 2,0x8086,0x7dd5,4,Intel(R) Graphics (Meteor Lake)
 2,0x8086,0x87c0,3,Intel(R) UHD Graphics 617 (Amber Lake)
 2,0x8086,0x87ca,3,Intel(R) UHD Graphics (Amber Lake)
@@ -276,9 +287,13 @@
 2,0x8086,0xa7a1,4,Intel(R) Iris(R) Xe Graphics (Raptor Lake)
 2,0x8086,0xa7a8,4,Intel(R) UHD Graphics (Raptor Lake)
 2,0x8086,0xa7a9,4,Intel(R) UHD Graphics (Raptor Lake)
+2,0x8086,0xa7aa,4,Intel(R) Graphics (Raptor Lake)
+2,0x8086,0xa7ab,4,Intel(R) Graphics (Raptor Lake)
 2,0x8086,0xa7ac,4,Intel(R) Graphics (Raptor Lake)
 2,0x8086,0xa7ad,4,Intel(R) Graphics (Raptor Lake)
 2,0x1002,0x1506,11,AMD Radeon(TM) Graphics (Mendocino)
+2,0x1002,0x150e,11,AMD Radeon(TM) Graphics (Strix Point)
+2,0x1002,0x1586,11,AMD Radeon(TM) Graphics (Strix Halo)
 2,0x1002,0x15bf,11,AMD Radeon(TM) Graphics (Phoenix)
 2,0x1002,0x15c8,11,AMD Radeon(TM) Graphics (Phoenix)
 2,0x1002,0x15d8,11,AMD Radeon(TM) Vega Graphics (Picasso)
@@ -297,10 +312,10 @@
 3,2,1,3,101,Is your CPU newer than or equal to the 4th generation (Haswell based) Core series?
 3,3,1,4,102,Is your CPU newer than or equal to the 5th generation (Broadwell based) Core series?
 3,4,1,5,103,Is your CPU newer than or equal to the 11th generation (Tiger Lake or Rocket Lake based) Core series?
-3,5,1,100,104,Is your CPU newer than the Core Ultra series 1 (Meteor Lake based)?
+3,5,1,100,104,Is your CPU newer than the Core Ultra series 2 (Lunar Lake based)?
 3,10,1,11,100,Is your CPU of AMD?
 3,11,1,12,100,Is your CPU newer than or equal to the Ryzen 1000 (Mendocino based) series?
-3,12,1,100,105,Is your CPU newer than the Ryzen 8000 (Phoenix or Hawk Point based) series?
+3,12,1,100,105,Is your CPU newer than the Ryzen AI 300 (Strix Point based) or Ryzen 9000 (Granite Ridge based) series?
 3,100,0,0,0,Your graphics is unknown.
 3,101,0,1,0,Treating as Intel Gen 6 compatible graphics.
 3,102,0,2,0,Treating as Intel Gen 7.5 compatible graphics.

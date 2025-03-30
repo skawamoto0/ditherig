@@ -1401,8 +1401,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	case WM_DISPLAYCHANGE:
-		if(g_bSupportedGPU)
-			ConfigureGPURegister(g_Selection);
+		g_TimerWaitCount = 5;
 		break;
 	case WM_COMMAND:
 		switch(LOWORD(wParam))
