@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////
 //                                                                  //
-//        Dithering Settings for Integrated Graphics Ver 2.3        //
+//        Dithering Settings for Integrated Graphics Ver 2.4        //
 //                                                                  //
 //////////////////////////////////////////////////////////////////////
 
-2025/03/30
+2026/03/29
 川本優
 
 //////////////////////////このソフトについて//////////////////////////
@@ -140,7 +140,15 @@ TDP制限を無効にします。
 電源の保護機能が無効になり、システムが不安定になる可能性があります。
 AMD製CPUでは動作しません。
 
-自動実行--------------------------------------------------------------
+システム設定----------------------------------------------------------
+
+Internal timer interval
+制御の周期を変更できます。
+周期を短くするとCPU使用率が上昇する可能性があります。
+
+Delay in device change notifications
+デバイスの変更を検出してから制御するまでの遅延を変更できます。
+遅延を短くするとデバイスドライバによる処理と干渉する可能性があります。
 
 Register to the Windows startup
 Windowsの起動時にDithering Settings for Integrated Graphicsを自動的に
@@ -155,13 +163,27 @@ Windowsの起動時にDithering Settings for Integrated Graphicsを自動的に
 Save current settings
 現在の設定を保存します。
 保存した設定は次回起動時に自動的に読み込まれます。
+システムが安定していることを確認してから設定を保存してください。
 
 Exit
 Dithering Settings for Integrated Graphicsを終了します。
 
+////////////////////////////動作しない場合////////////////////////////
+
+このソフトはHyper-Vベースのカーネル保護機能と互換性がありません。
+起動に失敗する場合はあらかじめWindows Defender Credential Guardなどの
+機能を無効化してください。
+
+一部のゲーム用チート対策などの改竄検知ソフトと互換性がありません。
+これについては対応できかねますのでご了承ください。
+
+未対応のグラフィックスについてデフォルトでは制御しません。
+メニューからIdentify GPU by questions...を実行し、
+最も近い世代のものを回答することで制御できる可能性があります。
+
 ///////////////////////////////動作環境///////////////////////////////
 
-OS		Windows 11 Version 24H2
+OS		Windows 11
 		Windows 10
 		Windows 8.1 Update
 		Windows 7 Service Pack 1
@@ -296,4 +318,11 @@ Intel Lunar Lakeに対応。
 AMD Strix Pointに対応。
 AMD Strix Haloに対応。
 軽微なバグを修正。
+
+Ver 2.4
+CPU負荷軽減のためにタイマーの初期値を変更。
+タイマーの動作設定を追加。
+Intel Panther Lakeに対応。
+AMD Krackan Pointに対応。
+AMD Gorgon Pointに対応。
 

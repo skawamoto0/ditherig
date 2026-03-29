@@ -65,7 +65,7 @@ IDR_MENU1 MENU
 BEGIN
     POPUP " "
     BEGIN
-        MENUITEM "--- Dithering Settings for Integrated Graphics Ver 2.3 ---", ID_TITLE, INACTIVE
+        MENUITEM "--- Dithering Settings for Integrated Graphics Ver 2.4 ---", ID_TITLE, INACTIVE
         MENUITEM " ",                           ID_INFO1, INACTIVE
         MENUITEM " ",                           ID_INFO2, INACTIVE
         MENUITEM "Identify GPU by questions...", ID_IDENTIFY
@@ -104,10 +104,27 @@ BEGIN
             MENUITEM "Disable TDP limit (MCH register 59A0)", ID_DISABLE_MCH59A0
         END
         MENUITEM SEPARATOR
-        POPUP "Automatic running"
+        POPUP "System settings"
         BEGIN
-            MENUITEM "Register to the Windows startup", ID_REGISTER
-            MENUITEM "Unregister from the Windows startup", ID_UNREGISTER
+            POPUP "Internal timer interval"
+            BEGIN
+                MENUITEM "10 milliseconds",             ID_TIMER_INTERVAL_10MS
+                MENUITEM "100 milliseconds",            ID_TIMER_INTERVAL_100MS
+                MENUITEM "500 milliseconds",            ID_TIMER_INTERVAL_500MS
+            END
+            POPUP "Delay in device change notifications"
+            BEGIN
+                MENUITEM "Immediate",                   ID_DELAY_IMMEDIATE
+                MENUITEM "0.5 seconds",                 ID_DELAY_500MS
+                MENUITEM "1 second",                    ID_DELAY_1000MS
+                MENUITEM "3 seconds",                   ID_DELAY_3000MS
+                MENUITEM "5 seconds",                   ID_DELAY_5000MS
+            END
+            POPUP "Automatic running"
+            BEGIN
+                MENUITEM "Register to the Windows startup", ID_REGISTER
+                MENUITEM "Unregister from the Windows startup", ID_UNREGISTER
+            END
         END
         MENUITEM "Save current settings",       ID_SAVE
         MENUITEM SEPARATOR
@@ -122,8 +139,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,3,0,1
- PRODUCTVERSION 2,3,0,1
+ FILEVERSION 2,4,0,1
+ PRODUCTVERSION 2,4,0,1
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -139,12 +156,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Dithering Settings for Integrated Graphics"
-            VALUE "FileVersion", "2, 3, 0, 1"
+            VALUE "FileVersion", "2, 4, 0, 1"
             VALUE "InternalName", "ditherig"
-            VALUE "LegalCopyright", "Copyright (C) 2013-2024 Suguru Kawamoto"
+            VALUE "LegalCopyright", "Copyright (C) 2013-2026 Suguru Kawamoto"
             VALUE "OriginalFilename", "ditherig.exe"
             VALUE "ProductName", "Dithering Settings for Integrated Graphics"
-            VALUE "ProductVersion", "2, 3, 0, 1"
+            VALUE "ProductVersion", "2, 4, 0, 1"
         END
     END
     BLOCK "VarFileInfo"

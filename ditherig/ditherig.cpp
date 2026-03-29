@@ -31,12 +31,14 @@ BOOL g_bDisableMCH59A0;
 DWORD g_GPUFreq;
 DWORD g_TypeOverride;
 DWORD g_Uncontrolled;
+DWORD g_TimerInterval;
+DWORD g_Delay;
 CHAR* g_pDatabase;
 DWORD_PTR g_PhysicalAddress;
 DWORD_PTR g_PhysicalSize;
 HANDLE g_hPhysicalMemory;
 PBYTE g_pPhysicalMemory;
-DWORD g_TimerWaitCount;
+DWORD g_DelayTimer;
 UINT g_TaskbarCreated;
 HPOWERNOTIFY g_hPowerNotify1;
 HPOWERNOTIFY g_hPowerNotify2;
@@ -1160,6 +1162,10 @@ void LoadSettings()
 			RegQueryValueEx(hAppKey, _T("TypeOverride"), NULL, NULL, (BYTE*)&g_TypeOverride, &Data);
 			Data = sizeof(DWORD);
 			RegQueryValueEx(hAppKey, _T("Uncontrolled"), NULL, NULL, (BYTE*)&g_Uncontrolled, &Data);
+			Data = sizeof(DWORD);
+			RegQueryValueEx(hAppKey, _T("TimerInterval"), NULL, NULL, (BYTE*)&g_TimerInterval, &Data);
+			Data = sizeof(DWORD);
+			RegQueryValueEx(hAppKey, _T("Delay"), NULL, NULL, (BYTE*)&g_Delay, &Data);
 			RegCloseKey(hAppKey);
 		}
 		RegCloseKey(hKey);
@@ -1187,6 +1193,8 @@ void SaveSettings()
 			RegSetValueEx(hAppKey, _T("GPUFreq"), 0, REG_DWORD, (BYTE*)&g_GPUFreq, sizeof(DWORD));
 			RegSetValueEx(hAppKey, _T("TypeOverride"), 0, REG_DWORD, (BYTE*)&g_TypeOverride, sizeof(DWORD));
 			RegSetValueEx(hAppKey, _T("Uncontrolled"), 0, REG_DWORD, (BYTE*)&g_Uncontrolled, sizeof(DWORD));
+			RegSetValueEx(hAppKey, _T("TimerInterval"), 0, REG_DWORD, (BYTE*)&g_TimerInterval, sizeof(DWORD));
+			RegSetValueEx(hAppKey, _T("Delay"), 0, REG_DWORD, (BYTE*)&g_Delay, sizeof(DWORD));
 			RegCloseKey(hAppKey);
 		}
 		RegCloseKey(hKey);
@@ -1225,6 +1233,14 @@ void UpdateMenu()
 	SetMenuItemInfo(hMenu, ID_PORT3, FALSE, &mii);
 	SetMenuItemInfo(hMenu, ID_PORT4, FALSE, &mii);
 	SetMenuItemInfo(hMenu, ID_PORT5, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_TIMER_INTERVAL_10MS, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_TIMER_INTERVAL_100MS, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_TIMER_INTERVAL_500MS, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_DELAY_IMMEDIATE, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_DELAY_500MS, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_DELAY_1000MS, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_DELAY_3000MS, FALSE, &mii);
+	SetMenuItemInfo(hMenu, ID_DELAY_5000MS, FALSE, &mii);
 	mii.fState |= MFS_CHECKED;
 	SetMenuItemInfo(hMenu, (UINT)(g_Selection + ID_SELECTION0), FALSE, &mii);
 	if(g_bFreqNominal)
@@ -1248,6 +1264,36 @@ void UpdateMenu()
 	{
 		if(g_Uncontrolled & (1 << i))
 			SetMenuItemInfo(hMenu, (UINT)(i + ID_PORT0), FALSE, &mii);
+	}
+	switch(g_TimerInterval)
+	{
+	case 10:
+		SetMenuItemInfo(hMenu, ID_TIMER_INTERVAL_10MS, FALSE, &mii);
+		break;
+	case 100:
+		SetMenuItemInfo(hMenu, ID_TIMER_INTERVAL_100MS, FALSE, &mii);
+		break;
+	case 500:
+		SetMenuItemInfo(hMenu, ID_TIMER_INTERVAL_500MS, FALSE, &mii);
+		break;
+	}
+	switch(g_Delay)
+	{
+	case 1:
+		SetMenuItemInfo(hMenu, ID_DELAY_IMMEDIATE, FALSE, &mii);
+		break;
+	case 500:
+		SetMenuItemInfo(hMenu, ID_DELAY_500MS, FALSE, &mii);
+		break;
+	case 1000:
+		SetMenuItemInfo(hMenu, ID_DELAY_1000MS, FALSE, &mii);
+		break;
+	case 3000:
+		SetMenuItemInfo(hMenu, ID_DELAY_3000MS, FALSE, &mii);
+		break;
+	case 5000:
+		SetMenuItemInfo(hMenu, ID_DELAY_5000MS, FALSE, &mii);
+		break;
 	}
 	if(!g_bSupportedGPU)
 	{
@@ -1274,6 +1320,21 @@ void UpdateMenu()
 	SetMenuItemInfo(hMenu, ID_INFO1, FALSE, &mii);
 	mii.dwTypeData = g_GPUInfo2;
 	SetMenuItemInfo(hMenu, ID_INFO2, FALSE, &mii);
+}
+
+BOOL UpdateTimer(HWND hWnd, DWORD Interval)
+{
+	BOOL bResult;
+	bResult = FALSE;
+	if(Interval > 0)
+	{
+		KillTimer(hWnd, 1);
+		if(SetTimer(hWnd, 1, (UINT)Interval, NULL))
+			bResult =TRUE;
+	}
+	else if(KillTimer(hWnd, 1))
+		bResult =TRUE;
+	return bResult;
 }
 
 BOOL UpdateNotifyIcon()
@@ -1373,9 +1434,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			EnableRAPL(FALSE);
 		if(g_bDisableMCH59A0)
 			EnableMCH59A0(FALSE);
+		if(g_TimerInterval == 0)
+			g_TimerInterval = 500;
+		if(g_Delay == 0)
+			g_Delay = 1000;
 		UpdateMenu();
-		g_TimerWaitCount = 0;
-		if(!SetTimer(hWnd, 1, 100, NULL))
+		g_DelayTimer = 0xffffffff;
+		if(!UpdateTimer(hWnd, g_TimerInterval))
 		{
 			MessageBox(hWnd, _T("Failed to initialize."), APPLICATION_NAME, MB_OK);
 			DestroyWindow(hWnd);
@@ -1389,7 +1454,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		UnregisterPowerSettingNotification(g_hPowerNotify1);
 		UnregisterPowerSettingNotification(g_hPowerNotify2);
 		UnregisterPowerSettingNotification(g_hPowerNotify3);
-		KillTimer(hWnd, 1);
+		UpdateTimer(hWnd, 0);
 		ReadPhysicalMemory(0, NULL, 0);
 		Shell_NotifyIcon(NIM_DELETE, &g_Notify);
 		Unload();
@@ -1401,7 +1466,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	case WM_DISPLAYCHANGE:
-		g_TimerWaitCount = 5;
+		g_DelayTimer = 0;
 		break;
 	case WM_COMMAND:
 		switch(LOWORD(wParam))
@@ -1593,6 +1658,56 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			g_Uncontrolled ^= 1 << Port;
 			UpdateMenu();
 			break;
+		case ID_TIMER_INTERVAL_10MS:
+			if(UpdateTimer(hWnd, 10))
+				g_TimerInterval = 10;
+			else
+			{
+				UpdateTimer(hWnd, g_TimerInterval);
+				MessageBox(hWnd, _T("Failed to initialize."), APPLICATION_NAME, MB_OK);
+			}
+			UpdateMenu();
+			break;
+		case ID_TIMER_INTERVAL_100MS:
+			if(UpdateTimer(hWnd, 100))
+				g_TimerInterval = 100;
+			else
+			{
+				UpdateTimer(hWnd, g_TimerInterval);
+				MessageBox(hWnd, _T("Failed to initialize."), APPLICATION_NAME, MB_OK);
+			}
+			UpdateMenu();
+			break;
+		case ID_TIMER_INTERVAL_500MS:
+			if(UpdateTimer(hWnd, 500))
+				g_TimerInterval = 500;
+			else
+			{
+				UpdateTimer(hWnd, g_TimerInterval);
+				MessageBox(hWnd, _T("Failed to initialize."), APPLICATION_NAME, MB_OK);
+			}
+			UpdateMenu();
+			break;
+		case ID_DELAY_IMMEDIATE:
+			g_Delay = 1;
+			UpdateMenu();
+			break;
+		case ID_DELAY_500MS:
+			g_Delay = 500;
+			UpdateMenu();
+			break;
+		case ID_DELAY_1000MS:
+			g_Delay = 1000;
+			UpdateMenu();
+			break;
+		case ID_DELAY_3000MS:
+			g_Delay = 3000;
+			UpdateMenu();
+			break;
+		case ID_DELAY_5000MS:
+			g_Delay = 5000;
+			UpdateMenu();
+			break;
 		}
 		break;
 	case WM_TIMER:
@@ -1604,11 +1719,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				if(g_bSupportedGPU)
 					ConfigureGPURegister(g_GPUFreq + 5);
 			}
-			if(g_TimerWaitCount > 0)
+			if(g_DelayTimer < 0xffffffff)
 			{
-				g_TimerWaitCount--;
-				if(g_TimerWaitCount == 0)
+				g_DelayTimer += g_TimerInterval;
+				if(g_DelayTimer >= g_Delay)
 				{
+					g_DelayTimer = 0xffffffff;
 					if(g_bSupportedGPU)
 						ConfigureGPURegister(g_Selection);
 					if(g_bFreqNominal)
@@ -1631,7 +1747,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_POWERBROADCAST:
-		g_TimerWaitCount = 5;
+		g_DelayTimer = 0;
 		return TRUE;
 		break;
 	case WM_USER:
