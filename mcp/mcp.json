@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "Dithering Settings for Integrated Graphics": {
+      "command": "python",
+      "args": [
+        "server.py"
+      ],
+      "env": {
+        "API_KEY": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  }
+}

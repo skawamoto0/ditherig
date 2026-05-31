@@ -65,7 +65,7 @@ IDR_MENU1 MENU
 BEGIN
     POPUP " "
     BEGIN
-        MENUITEM "--- Dithering Settings for Integrated Graphics Ver 2.4 ---", ID_TITLE, INACTIVE
+        MENUITEM "--- Dithering Settings for Integrated Graphics Ver 2.5 ---", ID_TITLE, INACTIVE
         MENUITEM " ",                           ID_INFO1, INACTIVE
         MENUITEM " ",                           ID_INFO2, INACTIVE
         MENUITEM "Identify GPU by questions...", ID_IDENTIFY
@@ -125,6 +125,7 @@ BEGIN
                 MENUITEM "Register to the Windows startup", ID_REGISTER
                 MENUITEM "Unregister from the Windows startup", ID_UNREGISTER
             END
+            MENUITEM "Show API key",                ID_API_KEY
         END
         MENUITEM "Save current settings",       ID_SAVE
         MENUITEM SEPARATOR
@@ -139,8 +140,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,4,0,1
- PRODUCTVERSION 2,4,0,1
+ FILEVERSION 2,5,0,1
+ PRODUCTVERSION 2,5,0,1
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -156,12 +157,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Dithering Settings for Integrated Graphics"
-            VALUE "FileVersion", "2, 4, 0, 1"
+            VALUE "FileVersion", "2, 5, 0, 1"
             VALUE "InternalName", "ditherig"
             VALUE "LegalCopyright", "Copyright (C) 2013-2026 Suguru Kawamoto"
             VALUE "OriginalFilename", "ditherig.exe"
             VALUE "ProductName", "Dithering Settings for Integrated Graphics"
-            VALUE "ProductVersion", "2, 4, 0, 1"
+            VALUE "ProductVersion", "2, 5, 0, 1"
         END
     END
     BLOCK "VarFileInfo"

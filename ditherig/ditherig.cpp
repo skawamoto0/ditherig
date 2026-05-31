@@ -5,10 +5,13 @@
 #include "resource.h"
 #include "InpOut32.h"
 #include "WinRing0.h"
+#include "APIServer.h"
 
 
 #define APPLICATION_NAME				_T("Dithering Settings for Integrated Graphics")
 #define APPLICATION_NAME_OLD			_T("Dithering Settings for Intel Graphics")
+#define API_SERVER_IDENTIFIER			"ditherig"
+#define API_SERVER_ENDPOINT				_T("\\\\.\\pipe\\ditherig.exe.api")
 
 HINSTANCE g_hInstance;
 TCHAR g_AppPath[MAX_PATH];
@@ -43,6 +46,8 @@ UINT g_TaskbarCreated;
 HPOWERNOTIFY g_hPowerNotify1;
 HPOWERNOTIFY g_hPowerNotify2;
 HPOWERNOTIFY g_hPowerNotify3;
+BYTE g_APIKey[32];
+void* g_APIServer;
 
 void GetDirFromFullPath(LPTSTR Dest, LPCTSTR File)
 {
@@ -1357,6 +1362,67 @@ BOOL UpdateNotifyIcon()
 	return bResult;
 }
 
+BOOL __stdcall APIServerCallbackProc(APISERVERMESSAGE* pMessage, HANDLE hFile)
+{
+	BOOL bResult;
+	DWORD Selection;
+	DWORD Previous;
+	DWORD Size;
+	bResult = FALSE;
+	if(pMessage->Length == (DWORD)sizeof(DWORD))
+	{
+		memcpy(&Selection, (BYTE*)pMessage + sizeof(APISERVERMESSAGE), sizeof(DWORD));
+		Previous = 0xffffffff;
+		if(Selection >= 0 && Selection <= ID_SELECTION4 - ID_SELECTION0)
+		{
+			Previous = g_Selection;
+			PostMessage(g_hWnd, WM_COMMAND, Selection + ID_SELECTION0, 0);
+		}
+		else if(Selection >= 5 && Selection <= 5 + ID_GPU_FREQ_LOWEST - ID_GPU_FREQ_RESET)
+		{
+			Previous = g_GPUFreq;
+			PostMessage(g_hWnd, WM_COMMAND, Selection - 5 + ID_GPU_FREQ_RESET, 0);
+		}
+		WriteFile(hFile, &Previous, (DWORD)sizeof(DWORD), &Size, NULL);
+		bResult = TRUE;
+	}
+	return bResult;
+}
+
+void ShowAPIKey(HWND hWnd)
+{
+	DWORD i;
+	WCHAR Key[65];
+	TCHAR Temp[256];
+	HGLOBAL hMem;
+	void* pMem;
+	for(i = 0; i < 32; i++)
+		wsprintf(&Key[i * 2], L"%02x", g_APIKey[i]);
+	_stprintf(Temp, _T("The API key is below.\nDo you want to copy the key to the clipboard?\n\n%s"), Key);
+	if(MessageBox(hWnd, Temp, APPLICATION_NAME, MB_YESNO) == IDYES)
+	{
+		if(hMem = GlobalAlloc(GMEM_MOVEABLE, sizeof(WCHAR) * 65))
+		{
+			if(pMem = GlobalLock(hMem))
+			{
+				memcpy(pMem, &Key, sizeof(WCHAR) * 65);
+				GlobalUnlock(hMem);
+				if(OpenClipboard(NULL))
+				{
+					EmptyClipboard();
+					if(!SetClipboardData(CF_UNICODETEXT, hMem))
+						GlobalFree(hMem);
+					CloseClipboard();
+				}
+				else
+					GlobalFree(hMem);
+			}
+			else
+				GlobalFree(hMem);
+		}
+	}
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	TCHAR Temp[MAX_PATH];
@@ -1392,6 +1458,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if(!g_hMenu)
 		{
 			MessageBox(hWnd, _T("Failed to load a resource."), APPLICATION_NAME, MB_OK);
+			DestroyWindow(hWnd);
+			break;
+		}
+		if(!CreateSecretKey(&g_APIKey, API_SERVER_IDENTIFIER, (DWORD)strlen(API_SERVER_IDENTIFIER)))
+		{
+			MessageBox(hWnd, _T("Failed to retrieve the system information."), APPLICATION_NAME, MB_OK);
 			DestroyWindow(hWnd);
 			break;
 		}
@@ -1449,11 +1521,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		g_hPowerNotify1 = RegisterPowerSettingNotification(hWnd, &GUID_MONITOR_POWER_ON, DEVICE_NOTIFY_WINDOW_HANDLE);
 		g_hPowerNotify2 = RegisterPowerSettingNotification(hWnd, &GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
 		g_hPowerNotify3 = RegisterPowerSettingNotification(hWnd, &GUID_LIDSWITCH_STATE_CHANGE, DEVICE_NOTIFY_WINDOW_HANDLE);
+		g_APIServer = StartAPIServer(API_SERVER_ENDPOINT, &g_APIKey, APIServerCallbackProc);
 		break;
 	case WM_DESTROY:
-		UnregisterPowerSettingNotification(g_hPowerNotify1);
-		UnregisterPowerSettingNotification(g_hPowerNotify2);
-		UnregisterPowerSettingNotification(g_hPowerNotify3);
+		if(g_APIServer)
+			StopAPIServer(g_APIServer);
+		if(g_hPowerNotify1)
+			UnregisterPowerSettingNotification(g_hPowerNotify1);
+		if(g_hPowerNotify2)
+			UnregisterPowerSettingNotification(g_hPowerNotify2);
+		if(g_hPowerNotify3)
+			UnregisterPowerSettingNotification(g_hPowerNotify3);
 		UpdateTimer(hWnd, 0);
 		ReadPhysicalMemory(0, NULL, 0);
 		Shell_NotifyIcon(NIM_DELETE, &g_Notify);
@@ -1707,6 +1785,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case ID_DELAY_5000MS:
 			g_Delay = 5000;
 			UpdateMenu();
+			break;
+		case ID_API_KEY:
+			ShowAPIKey(hWnd);
 			break;
 		}
 		break;

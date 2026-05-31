@@ -22,5 +22,6 @@
 
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "taskschd.lib")
+#pragma comment(lib, "bcrypt.lib")
 
 
